@@ -6,8 +6,7 @@ export default function TasksPage() {
   const [projectId, setProjectId] = useState('')
   const [tasks, setTasks] = useState([])
   const [title, setTitle] = useState('')
-  const [status, setStatus] = useState('todo')
-  const [statusFilter, setStatusFilter] = useState('all')
+  const [status, setStatus] = useState('all')
 
   async function load() {
     const ps = await getProjects()
@@ -19,16 +18,18 @@ export default function TasksPage() {
 
   async function submit(e) {
     e.preventDefault()
-    await createTask({ projectId, title, status })
+    const taskStatus = status === 'all' ? 'todo' : status
+    await createTask({ projectId, title, status: taskStatus })
     setTitle('')
-    setStatus('todo')
+    setStatus('all')
     setTasks(await getTasks(projectId))
   }
 
   async function quickAdd() {
     const generatedTitle = `Task ${new Date().toLocaleString()}`
-    await createTask({ projectId, title: generatedTitle, status })
-    setStatus('todo')
+    const taskStatus = status === 'all' ? 'todo' : status
+    await createTask({ projectId, title: generatedTitle, status: taskStatus })
+    setStatus('all')
     setTasks(await getTasks(projectId))
   }
 
@@ -43,7 +44,7 @@ export default function TasksPage() {
     setTasks(await getTasks(projectId))
   }
 
-  const visibleTasks = tasks.filter(t => statusFilter === 'all' ? true : t.status === statusFilter)
+  const visibleTasks = tasks.filter(t => status === 'all' ? true : t.status === status)
 
   return (
     <div>
@@ -55,18 +56,12 @@ export default function TasksPage() {
         </select>
         {/* Move quick add controls close to project selector */}
         <select value={status} onChange={e => setStatus(e.target.value)}>
-          <option value="todo">To do</option>
-          <option value="in_progress">Ongoing</option>
-          <option value="done">Completed</option>
-        </select>
-        <button onClick={quickAdd}>Add</button>
-        <div style={{ marginLeft: 'auto' }} />
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
           <option value="all">All</option>
           <option value="todo">To do</option>
           <option value="in_progress">Ongoing</option>
           <option value="done">Completed</option>
         </select>
+        <button onClick={quickAdd}>Add</button>
       </div>
       <>
           <ul>
