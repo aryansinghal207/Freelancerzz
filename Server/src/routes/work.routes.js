@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/auth.js';
+import { authenticate, requireFreelancer } from '../middleware/auth.js';
 import { startTimer, stopTimer, manualLog, listSessions, deleteSession } from '../controllers/work.controller.js';
 
 const router = Router();
-router.use(requireAuth);
+router.use(authenticate);
+router.use(requireFreelancer);
 
 router.get('/', listSessions);
 router.post('/start', startTimer);

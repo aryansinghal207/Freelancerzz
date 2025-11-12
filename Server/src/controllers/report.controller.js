@@ -3,7 +3,7 @@ import WorkSession from '../models/WorkSession.js';
 
 export async function summary(req, res) {
   const { from, to } = req.query;
-  const filter = { userId: req.user.id };
+  const filter = { userId: req.userId };
   if (from || to) {
     filter.startTime = {};
     if (from) filter.startTime.$gte = dayjs(from).toDate();
@@ -21,7 +21,7 @@ export async function groupByPeriod(req, res) {
   const start = from ? dayjs(from) : dayjs().startOf('year');
   const end = to ? dayjs(to) : dayjs();
   const sessions = await WorkSession.find({
-    userId: req.user.id,
+    userId: req.userId,
     startTime: { $gte: start.toDate(), $lte: end.toDate() },
   });
 

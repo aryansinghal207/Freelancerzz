@@ -13,9 +13,16 @@ import workRoutes from './routes/work.routes.js';
 import invoiceRoutes from './routes/invoice.routes.js';
 import reportRoutes from './routes/report.routes.js';
 import calendarRoutes from './routes/calendar.routes.js';
+import clientPortalRoutes from './routes/clientPortal.routes.js';
 import path from 'path';
 
 dotenv.config();
+
+// Debug: Log email configuration (masked for security)
+console.log('Environment Variables Check:');
+console.log('EMAIL_USER:', process.env.EMAIL_USER ? '✓ Set' : '✗ Not set');
+console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? '✓ Set (length: ' + process.env.EMAIL_PASS.length + ')' : '✗ Not set');
+console.log('EMAIL_FROM_NAME:', process.env.EMAIL_FROM_NAME || 'Not set');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -50,6 +57,7 @@ app.use('/api/work', workRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/calendar', calendarRoutes);
+app.use('/api/client-portal', clientPortalRoutes);
 
 // Serve generated invoice PDFs statically
 app.use('/invoices', express.static(path.resolve(process.cwd(), 'invoices')));

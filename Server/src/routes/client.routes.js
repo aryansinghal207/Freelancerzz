@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/auth.js';
+import { authenticate, requireFreelancer } from '../middleware/auth.js';
 import { listClients, createClient, getClient, updateClient, deleteClient } from '../controllers/client.controller.js';
 
 const router = Router();
-router.use(requireAuth);
+router.use(authenticate);
+router.use(requireFreelancer); // Only freelancers can manage clients
 
 router.get('/', listClients);
 router.post('/', createClient);

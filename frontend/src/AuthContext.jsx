@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react'
-import { login as apiLogin, register as apiRegister } from './api'
+import { login as apiLogin, register as apiRegister, registerClient as apiRegisterClient } from './api'
 
 const AuthCtx = createContext(null)
 
@@ -23,10 +23,22 @@ export function AuthProvider({ children }) {
       localStorage.setItem('user', JSON.stringify(data.user))
       setUser(data.user)
     },
+    async registerClient(payload) {
+      const data = await apiRegisterClient(payload)
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
+      setUser(data.user)
+    },
     logout() {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       setUser(null)
+    },
+    isFreelancer() {
+      return user?.role === 'freelancer'
+    },
+    isClient() {
+      return user?.role === 'client'
     }
   }), [user])
 

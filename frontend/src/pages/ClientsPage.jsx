@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { createClient, deleteClient, getClients, updateClient, getProjects } from '../api'
+import { createClient, deleteClient, getClients, updateClient, getProjects, inviteClient } from '../api'
 
 export default function ClientsPage() {
   const [clients, setClients] = useState([])
@@ -50,6 +50,26 @@ export default function ClientsPage() {
     }
   }
 
+  async function inviteClientUser(c) {
+    const email = prompt('Enter client email for portal access:', c.email || '')
+    if (!email) return
+    const name = prompt('Enter client name:', c.name || '')
+    if (!name) return
+    
+    try {
+      const result = await inviteClient({ clientId: c._id, email, name })
+      if (result.emailError) {
+        // Email failed but user created
+        alert(`Client invited successfully!\n\n⚠️ Email delivery failed. Please share these credentials manually:\n\nEmail: ${result.clientUser.email}\nPassword: ${result.clientUser.tempPassword}`)
+      } else {
+        // Email sent successfully
+        alert(`✅ Client invited successfully!\n\nCredentials have been sent to ${email}.\nThe client will receive an email with their login details.`)
+      }
+    } catch (err) {
+      alert('Failed to invite client: ' + (err.response?.data?.message || err.message))
+    }
+  }
+
   return (
     <div>
       <h2>Clients</h2>
@@ -70,6 +90,7 @@ export default function ClientsPage() {
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <span>{c.name} {c.email ? `- ${c.email}` : ''}</span>
               <button className="secondary" onClick={() => toggleView(c)}>{expandedId === c._id ? 'Hide' : 'View'}</button>
+              <button onClick={() => inviteClientUser(c)}>Invite to Portal</button>
               <button onClick={() => edit(c)}>Edit</button>
               <button className="danger" onClick={() => remove(c)}>Delete</button>
             </div>

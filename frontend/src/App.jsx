@@ -9,6 +9,11 @@ import TimerPage from './pages/TimerPage.jsx'
 import InvoicesPage from './pages/InvoicesPage.jsx'
 import ReportsPage from './pages/ReportsPage.jsx'
 import CalendarPage from './pages/CalendarPage.jsx'
+import ClientDashboardPage from './pages/ClientDashboardPage.jsx'
+import ClientProjectsPage from './pages/ClientProjectsPage.jsx'
+import ClientProjectDetailPage from './pages/ClientProjectDetailPage.jsx'
+import ClientInvoicesPage from './pages/ClientInvoicesPage.jsx'
+import ClientTimeReportPage from './pages/ClientTimeReportPage.jsx'
 
 function AppLayout({ children }) {
   const auth = useAuth()
@@ -19,16 +24,31 @@ function AppLayout({ children }) {
     navigate('/login')
   }
 
+  const isFreelancer = auth.isFreelancer()
+  const isClient = auth.isClient()
+
   return (
     <div className="app-shell">
       <nav style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-        <NavLink to="/clients" className={({ isActive }) => isActive ? 'active' : undefined}>Clients</NavLink>
-        <NavLink to="/projects" className={({ isActive }) => isActive ? 'active' : undefined}>Projects</NavLink>
-        <NavLink to="/tasks" className={({ isActive }) => isActive ? 'active' : undefined}>Tasks</NavLink>
-        <NavLink to="/timer" className={({ isActive }) => isActive ? 'active' : undefined}>Timer</NavLink>
-        <NavLink to="/invoices" className={({ isActive }) => isActive ? 'active' : undefined}>Invoices</NavLink>
-        <NavLink to="/reports" className={({ isActive }) => isActive ? 'active' : undefined}>Reports</NavLink>
-        <NavLink to="/calendar" className={({ isActive }) => isActive ? 'active' : undefined}>Calendar</NavLink>
+        {isFreelancer && (
+          <>
+            <NavLink to="/clients" className={({ isActive }) => isActive ? 'active' : undefined}>Clients</NavLink>
+            <NavLink to="/projects" className={({ isActive }) => isActive ? 'active' : undefined}>Projects</NavLink>
+            <NavLink to="/tasks" className={({ isActive }) => isActive ? 'active' : undefined}>Tasks</NavLink>
+            <NavLink to="/timer" className={({ isActive }) => isActive ? 'active' : undefined}>Timer</NavLink>
+            <NavLink to="/invoices" className={({ isActive }) => isActive ? 'active' : undefined}>Invoices</NavLink>
+            <NavLink to="/reports" className={({ isActive }) => isActive ? 'active' : undefined}>Reports</NavLink>
+            <NavLink to="/calendar" className={({ isActive }) => isActive ? 'active' : undefined}>Calendar</NavLink>
+          </>
+        )}
+        {isClient && (
+          <>
+            <NavLink to="/client/dashboard" className={({ isActive }) => isActive ? 'active' : undefined}>Dashboard</NavLink>
+            <NavLink to="/client/projects" className={({ isActive }) => isActive ? 'active' : undefined}>Projects</NavLink>
+            <NavLink to="/client/invoices" className={({ isActive }) => isActive ? 'active' : undefined}>Invoices</NavLink>
+            <NavLink to="/client/time-report" className={({ isActive }) => isActive ? 'active' : undefined}>Time Report</NavLink>
+          </>
+        )}
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
           {auth?.user ? (
             <>
@@ -37,6 +57,17 @@ function AppLayout({ children }) {
                   {(auth.user.name || auth.user.email).slice(0,1).toUpperCase()}
                 </div>
                 <span>{auth.user.name || auth.user.email}</span>
+                {auth.user.role && (
+                  <span style={{ 
+                    fontSize: 12, 
+                    padding: '2px 8px', 
+                    background: isFreelancer ? '#e3f2fd' : '#f3e5f5',
+                    color: isFreelancer ? '#1565c0' : '#6a1b9a',
+                    borderRadius: 4 
+                  }}>
+                    {auth.user.role}
+                  </span>
+                )}
                 <button className="secondary" onClick={handleLogout}>Logout</button>
               </div>
             </>
@@ -56,18 +87,33 @@ function Placeholder({ title }) {
 
 export default function App() {
   const auth = useAuth()
+  const isFreelancer = auth?.user && auth.isFreelancer()
+  const isClient = auth?.user && auth.isClient()
+  
+  // Determine default route based on role
+  const defaultRoute = isClient ? '/client/dashboard' : '/clients'
+  
   return (
     <AppLayout>
       <Routes>
-        <Route path="/" element={<Navigate to={auth?.user ? '/clients' : '/login'} replace />} />
+        <Route path="/" element={<Navigate to={auth?.user ? defaultRoute : '/login'} replace />} />
         <Route path="/login" element={<AuthPage />} />
-        <Route path="/clients" element={auth?.user ? <ClientsPage /> : <Navigate to="/login" replace />} />
-        <Route path="/projects" element={auth?.user ? <ProjectsPage /> : <Navigate to="/login" replace />} />
-        <Route path="/tasks" element={auth?.user ? <TasksPage /> : <Navigate to="/login" replace />} />
-        <Route path="/timer" element={auth?.user ? <TimerPage /> : <Navigate to="/login" replace />} />
-        <Route path="/invoices" element={auth?.user ? <InvoicesPage /> : <Navigate to="/login" replace />} />
-        <Route path="/reports" element={auth?.user ? <ReportsPage /> : <Navigate to="/login" replace />} />
-        <Route path="/calendar" element={auth?.user ? <CalendarPage /> : <Navigate to="/login" replace />} />
+        
+        {/* Freelancer Routes */}
+        <Route path="/clients" element={isFreelancer ? <ClientsPage /> : <Navigate to="/login" replace />} />
+        <Route path="/projects" element={isFreelancer ? <ProjectsPage /> : <Navigate to="/login" replace />} />
+        <Route path="/tasks" element={isFreelancer ? <TasksPage /> : <Navigate to="/login" replace />} />
+        <Route path="/timer" element={isFreelancer ? <TimerPage /> : <Navigate to="/login" replace />} />
+        <Route path="/invoices" element={isFreelancer ? <InvoicesPage /> : <Navigate to="/login" replace />} />
+        <Route path="/reports" element={isFreelancer ? <ReportsPage /> : <Navigate to="/login" replace />} />
+        <Route path="/calendar" element={isFreelancer ? <CalendarPage /> : <Navigate to="/login" replace />} />
+        
+        {/* Client Portal Routes */}
+        <Route path="/client/dashboard" element={isClient ? <ClientDashboardPage /> : <Navigate to="/login" replace />} />
+        <Route path="/client/projects" element={isClient ? <ClientProjectsPage /> : <Navigate to="/login" replace />} />
+        <Route path="/client/projects/:id" element={isClient ? <ClientProjectDetailPage /> : <Navigate to="/login" replace />} />
+        <Route path="/client/invoices" element={isClient ? <ClientInvoicesPage /> : <Navigate to="/login" replace />} />
+        <Route path="/client/time-report" element={isClient ? <ClientTimeReportPage /> : <Navigate to="/login" replace />} />
       </Routes>
     </AppLayout>
   )

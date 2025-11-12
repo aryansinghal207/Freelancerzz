@@ -17,12 +17,12 @@ export async function createInvoiceFromRange(req, res) {
   const fromDate = from ? dayjs(from).toDate() : new Date(0);
   const toDate = to ? dayjs(to).toDate() : new Date();
 
-  const project = await Project.findOne({ _id: projectId, userId: req.user.id });
+  const project = await Project.findOne({ _id: projectId, userId: req.userId });
   if (!project) return res.status(404).json({ message: 'Project not found' });
   const derivedClientId = project.clientId;
 
   const sessions = await WorkSession.find({
-    userId: req.user.id,
+    userId: req.userId,
     projectId,
     startTime: { $gte: fromDate, $lte: toDate },
     invoiced: false,
@@ -48,7 +48,7 @@ export async function createInvoiceFromRange(req, res) {
   const invoiceNumber = number || `INV-${Date.now()}`;
 
   const invoice = await Invoice.create({
-    userId: req.user.id,
+    userId: req.userId,
     clientId: derivedClientId,
     projectId,
     number: invoiceNumber,
@@ -72,18 +72,18 @@ export async function createInvoiceFromRange(req, res) {
 }
 
 export async function listInvoices(req, res) {
-  const invoices = await Invoice.find({ userId: req.user.id }).sort({ createdAt: -1 });
+  const invoices = await Invoice.find({ userId: req.userId }).sort({ createdAt: -1 });
   res.json(invoices);
 }
 
 export async function getInvoice(req, res) {
-  const inv = await Invoice.findOne({ _id: req.params.id, userId: req.user.id });
+  const inv = await Invoice.findOne({ _id: req.params.id, userId: req.userId });
   if (!inv) return res.status(404).json({ message: 'Not found' });
   res.json(inv);
 }
 
 export async function sendInvoiceEmail(req, res) {
-  const inv = await Invoice.findOne({ _id: req.params.id, userId: req.user.id });
+  const inv = await Invoice.findOne({ _id: req.params.id, userId: req.userId });
   if (!inv) return res.status(404).json({ message: 'Not found' });
   const client = await Client.findById(inv.clientId);
 
@@ -109,7 +109,7 @@ export async function sendInvoiceEmail(req, res) {
 
 
 export async function deleteInvoice(req, res) {
-  const inv = await Invoice.findOne({ _id: req.params.id, userId: req.user.id });
+  const inv = await Invoice.findOne({ _id: req.params.id, userId: req.userId });
   if (!inv) return res.status(404).json({ message: 'Not found' });
   try {
     // Mark related sessions as not invoiced

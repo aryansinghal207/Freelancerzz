@@ -20,6 +20,16 @@ export async function login(data) {
   return res.data
 }
 
+export async function inviteClient(data) {
+  const res = await api.post('/auth/invite-client', data)
+  return res.data
+}
+
+export async function registerClient(data) {
+  const res = await api.post('/auth/register-client', data)
+  return res.data
+}
+
 // Clients
 export const getClients = async () => (await api.get('/clients')).data
 export const createClient = async (payload) => (await api.post('/clients', payload)).data
@@ -59,5 +69,16 @@ export const getGrouped = async (params) => (await api.get('/reports/grouped', {
 export const getDaily = async (date) => (await api.get('/calendar/daily', { params: { date } })).data
 export const getWeekly = async (date) => (await api.get('/calendar/weekly', { params: { date } })).data
 export const getMonthly = async (date) => (await api.get('/calendar/monthly', { params: { date } })).data
+
+// Client Portal APIs
+export const getClientDashboard = async () => (await api.get('/client-portal/dashboard')).data
+export const getClientInfo = async () => (await api.get('/client-portal/info')).data
+export const getClientProjects = async () => (await api.get('/client-portal/projects')).data
+export const getClientProject = async (id) => (await api.get(`/client-portal/projects/${id}`)).data
+export const getClientProjectTasks = async (projectId) => (await api.get(`/client-portal/projects/${projectId}/tasks`)).data
+export const getClientWorkSessions = async (params) => (await api.get('/client-portal/work-sessions', { params })).data
+export const getClientInvoices = async () => (await api.get('/client-portal/invoices')).data
+export const getClientInvoice = async (id) => (await api.get(`/client-portal/invoices/${id}`)).data
+export const getClientTimeReport = async (params) => (await api.get('/client-portal/time-report', { params })).data
 
 

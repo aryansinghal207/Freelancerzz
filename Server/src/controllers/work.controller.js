@@ -8,11 +8,11 @@ function computeRate({ project }) {
 
 export async function startTimer(req, res) {
   const { projectId, taskId, note } = req.body;
-  const project = await Project.findOne({ _id: projectId, userId: req.user.id });
+  const project = await Project.findOne({ _id: projectId, userId: req.userId });
   if (!project) return res.status(404).json({ message: 'Project not found' });
   const rate = computeRate({ project });
   const ws = await WorkSession.create({
-    userId: req.user.id,
+    userId: req.userId,
     projectId,
     taskId,
     note,
@@ -24,7 +24,7 @@ export async function startTimer(req, res) {
 
 export async function stopTimer(req, res) {
   const { id } = req.params;
-  const ws = await WorkSession.findOne({ _id: id, userId: req.user.id });
+  const ws = await WorkSession.findOne({ _id: id, userId: req.userId });
   if (!ws) return res.status(404).json({ message: 'Session not found' });
   if (ws.endTime) return res.status(400).json({ message: 'Already stopped' });
   ws.endTime = new Date();
@@ -36,10 +36,10 @@ export async function stopTimer(req, res) {
 
 export async function manualLog(req, res) {
   const { projectId, taskId, note, startTime, endTime, durationMinutes, hourlyRate } = req.body;
-  const project = await Project.findOne({ _id: projectId, userId: req.user.id });
+  const project = await Project.findOne({ _id: projectId, userId: req.userId });
   if (!project) return res.status(404).json({ message: 'Project not found' });
   const ws = await WorkSession.create({
-    userId: req.user.id,
+    userId: req.userId,
     projectId,
     taskId,
     note,
@@ -58,7 +58,7 @@ export async function manualLog(req, res) {
 
 export async function listSessions(req, res) {
   const { projectId, from, to } = req.query;
-  const filter = { userId: req.user.id };
+  const filter = { userId: req.userId };
   if (projectId) filter.projectId = projectId;
   if (from || to) {
     filter.startTime = {};
@@ -70,7 +70,7 @@ export async function listSessions(req, res) {
 }
 
 export async function deleteSession(req, res) {
-  const deleted = await WorkSession.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+  const deleted = await WorkSession.findOneAndDelete({ _id: req.params.id, userId: req.userId });
   if (!deleted) return res.status(404).json({ message: 'Not found' });
   res.json({ success: true });
 }
