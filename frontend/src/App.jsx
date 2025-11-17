@@ -97,7 +97,7 @@ export default function App() {
     <AppLayout>
       <Routes>
         <Route path="/" element={<Navigate to={auth?.user ? defaultRoute : '/login'} replace />} />
-        <Route path="/login" element={<AuthPage />} />
+        <Route path="/login" element={auth?.user ? <Navigate to={defaultRoute} replace /> : <AuthPage />} />
         
         {/* Freelancer Routes */}
         <Route path="/clients" element={isFreelancer ? <ClientsPage /> : <Navigate to="/login" replace />} />

@@ -15,9 +15,18 @@ export default function AuthPage() {
     e.preventDefault()
     setError('')
     try {
-      if (isLogin) await auth.login({ email, password })
-      else await auth.register({ name, email, password })
-      navigate('/clients')
+      if (isLogin) {
+        await auth.login({ email, password })
+      } else {
+        await auth.register({ name, email, password })
+      }
+      
+      // Navigate based on user role
+      if (auth.isClient()) {
+        navigate('/client/dashboard')
+      } else {
+        navigate('/clients')
+      }
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed')
     }
