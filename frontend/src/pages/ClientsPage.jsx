@@ -1,11 +1,22 @@
 import { useEffect, useState } from 'react'
 import { createClient, deleteClient, getClients, updateClient, getProjects, inviteClient } from '../api'
+import MessageModal from '../components/MessageModal'
 
 export default function ClientsPage() {
   const [clients, setClients] = useState([])
-  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', defaultHourlyRate: '' })
+  const [form, setForm] = useState({ 
+    name: '', 
+    email: '', 
+    phone: '', 
+    address: '', 
+    defaultHourlyRate: '',
+    projectName: '',
+    projectDescription: '',
+    projectDeadline: ''
+  })
   const [expandedId, setExpandedId] = useState('')
   const [clientProjects, setClientProjects] = useState({})
+  const [messageModal, setMessageModal] = useState(null)
 
   async function load() {
     setClients(await getClients())
@@ -14,8 +25,29 @@ export default function ClientsPage() {
 
   async function submit(e) {
     e.preventDefault()
-    await createClient(form)
-    setForm({ name: '', email: '', phone: '', address: '', defaultHourlyRate: '' })
+    
+    const clientData = {
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      address: form.address,
+      defaultHourlyRate: form.defaultHourlyRate || 0,
+      projectName: form.projectName,
+      projectDescription: form.projectDescription,
+      projectDeadline: form.projectDeadline
+    }
+    
+    await createClient(clientData)
+    setForm({ 
+      name: '', 
+      email: '', 
+      phone: '', 
+      address: '', 
+      defaultHourlyRate: '',
+      projectName: '',
+      projectDescription: '',
+      projectDeadline: ''
+    })
     load()
   }
 
@@ -73,12 +105,27 @@ export default function ClientsPage() {
   return (
     <div>
       <h2>Clients</h2>
-      <form onSubmit={submit} style={{ display: 'grid', gap: 8, maxWidth: 420 }}>
-        <input placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
+      <form onSubmit={submit} style={{ display: 'grid', gap: 8, maxWidth: 500 }}>
+        <input placeholder="Client Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
         <input placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
         <input placeholder="Phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
         <input placeholder="Address" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} />
-        <input placeholder="Default Rate" type="number" value={form.defaultHourlyRate} onChange={e => setForm({ ...form, defaultHourlyRate: Number(e.target.value) })} />
+        <input placeholder="Hourly Rate" type="number" value={form.defaultHourlyRate} onChange={e => setForm({ ...form, defaultHourlyRate: Number(e.target.value) })} />
+        <input placeholder="Project Name" value={form.projectName} onChange={e => setForm({ ...form, projectName: e.target.value })} required />
+        <textarea 
+          placeholder="Project Description" 
+          value={form.projectDescription} 
+          onChange={e => setForm({ ...form, projectDescription: e.target.value })}
+          rows={3}
+          required
+        />
+        <input 
+          placeholder="Project Deadline" 
+          type="date" 
+          value={form.projectDeadline} 
+          onChange={e => setForm({ ...form, projectDeadline: e.target.value })}
+          required
+        />
         <button>Add Client</button>
       </form>
       <ul>
@@ -90,6 +137,7 @@ export default function ClientsPage() {
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <span>{c.name} {c.email ? `- ${c.email}` : ''}</span>
               <button className="secondary" onClick={() => toggleView(c)}>{expandedId === c._id ? 'Hide' : 'View'}</button>
+              <button onClick={() => setMessageModal({ clientId: c._id, clientName: c.name, freelancerId: c.userId })}>💬 Message</button>
               <button onClick={() => inviteClientUser(c)}>Invite to Portal</button>
               <button onClick={() => edit(c)}>Edit</button>
               <button className="danger" onClick={() => remove(c)}>Delete</button>
@@ -121,6 +169,15 @@ export default function ClientsPage() {
           </li>
         ))}
       </ul>
+      
+      {messageModal && (
+        <MessageModal
+          clientId={messageModal.clientId}
+          clientName={messageModal.clientName}
+          freelancerId={messageModal.freelancerId}
+          onClose={() => setMessageModal(null)}
+        />
+      )}
     </div>
   )
 }

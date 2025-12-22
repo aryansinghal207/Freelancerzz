@@ -58,12 +58,17 @@ button:active { transform: translateY(1px); }
 button.secondary { background: #1f2937; border-color: #374151; }
 button.danger { background: var(--danger); border-color: #dc2626; }
 
-input, select {
+input, select, textarea {
   background: #0b1220;
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 8px 10px;
+  font-family: inherit;
+}
+
+textarea {
+  resize: vertical;
 }
 
 form { background: var(--panel); border: 1px solid var(--border); padding: 12px; border-radius: 10px; box-shadow: var(--shadow); }

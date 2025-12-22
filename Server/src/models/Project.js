@@ -6,6 +6,7 @@ const projectSchema = new mongoose.Schema(
     clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Client', required: true, index: true },
     name: { type: String, required: true },
     description: { type: String },
+    deadline: { type: Date },
     hourlyRate: { type: Number }, // overrides client rate if set
     status: { type: String, enum: ['active', 'archived'], default: 'active' },
   },

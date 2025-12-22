@@ -1,4 +1,5 @@
 import Client from '../models/Client.js';
+import Project from '../models/Project.js';
 
 export async function listClients(req, res) {
   const clients = await Client.find({ userId: req.userId }).sort({ createdAt: -1 });
@@ -6,9 +7,24 @@ export async function listClients(req, res) {
 }
 
 export async function createClient(req, res) {
-  const data = { ...req.body, userId: req.userId };
-  const created = await Client.create(data);
-  res.status(201).json(created);
+  const { projectName, projectDescription, projectDeadline, ...clientData } = req.body;
+  const data = { ...clientData, userId: req.userId };
+  const client = await Client.create(data);
+  
+  // Create project for this client
+  if (projectName) {
+    await Project.create({
+      userId: req.userId,
+      clientId: client._id,
+      name: projectName,
+      description: projectDescription || '',
+      deadline: projectDeadline,
+      hourlyRate: client.defaultHourlyRate,
+      status: 'active'
+    });
+  }
+  
+  res.status(201).json(client);
 }
 
 export async function getClient(req, res) {

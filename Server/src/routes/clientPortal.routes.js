@@ -9,7 +9,8 @@ import {
   getClientInvoices,
   getClientInvoice,
   getClientDashboard,
-  getClientTimeReport
+  getClientTimeReport,
+  markAllInvoicesPaid
 } from '../controllers/clientPortal.controller.js';
 
 const router = Router();
@@ -24,6 +25,7 @@ router.get('/projects/:projectId/tasks', listClientProjectTasks);
 router.get('/work-sessions', getClientWorkSessions);
 router.get('/invoices', getClientInvoices);
 router.get('/invoices/:id', getClientInvoice);
+router.post('/invoices/mark-paid', markAllInvoicesPaid);
 router.get('/time-report', getClientTimeReport);
 
 export default router;

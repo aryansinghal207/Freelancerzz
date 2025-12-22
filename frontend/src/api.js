@@ -80,5 +80,12 @@ export const getClientWorkSessions = async (params) => (await api.get('/client-p
 export const getClientInvoices = async () => (await api.get('/client-portal/invoices')).data
 export const getClientInvoice = async (id) => (await api.get(`/client-portal/invoices/${id}`)).data
 export const getClientTimeReport = async (params) => (await api.get('/client-portal/time-report', { params })).data
+export const markAllInvoicesPaid = async () => (await api.post('/client-portal/invoices/mark-paid')).data
+
+// Messages
+export const sendMessage = async (payload) => (await api.post('/messages/send', payload)).data
+export const getMessages = async (clientId) => (await api.get(`/messages/client/${clientId}`)).data
+export const markMessagesAsRead = async (clientId) => (await api.post(`/messages/client/${clientId}/read`)).data
+export const getUnreadCount = async () => (await api.get('/messages/unread-count')).data
 
 

@@ -27,6 +27,7 @@ const invoiceSchema = new mongoose.Schema(
     total: { type: Number, required: true },
     pdfPath: { type: String },
     status: { type: String, enum: ['draft', 'sent', 'paid', 'overdue'], default: 'draft' },
+    paidAt: { type: Date },
     notes: { type: String },
   },
   { timestamps: true }

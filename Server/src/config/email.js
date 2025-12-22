@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Debug email configuration
-console.log('📧 Email Config Debug:');
+console.log('Email Config Debug:');
 console.log('EMAIL_USER from env:', process.env.EMAIL_USER || 'NOT SET');
 console.log('EMAIL_PASS from env:', process.env.EMAIL_PASS ? `SET (${process.env.EMAIL_PASS.length} chars)` : 'NOT SET');
 
@@ -23,10 +23,10 @@ console.log('Using email:', process.env.EMAIL_USER || 'aryansinghal207@gmail.com
 // Verify connection configuration
 transporter.verify(function (error, success) {
   if (error) {
-    console.log('⚠️  Email configuration error:', error.message);
-    console.log('📧 Email invitations will fall back to manual password sharing');
+    console.log('Email configuration error:', error.message);
+    console.log('Email invitations will fall back to manual password sharing');
   } else {
-    console.log('✅ Email server is ready to send messages');
+    console.log('Email server is ready to send messages');
   }
 });
 
@@ -140,7 +140,7 @@ export async function sendClientInvitationEmail(clientEmail, clientName, tempPas
           </div>
           
           <div class="warning">
-            <strong>⚠️ Important:</strong> Please change your password after your first login for security purposes.
+            <strong> Important:</strong> Please change your password after your first login for security purposes.
           </div>
           
           <div style="text-align: center;">
@@ -151,11 +151,11 @@ export async function sendClientInvitationEmail(clientEmail, clientName, tempPas
           
           <h3>What You Can Do:</h3>
           <ul>
-            <li>📊 View your project dashboard and progress</li>
-            <li>📋 Track tasks and their status</li>
-            <li>⏱️ Monitor time logs and work sessions</li>
-            <li>💰 View and download invoices</li>
-            <li>📈 Generate detailed time reports</li>
+            <li> View your project dashboard and progress</li>
+            <li> Track tasks and their status</li>
+            <li>⏱ Monitor time logs and work sessions</li>
+            <li> View and download invoices</li>
+            <li> Generate detailed time reports</li>
           </ul>
           
           <p>If you have any questions or need assistance, please don't hesitate to reach out to <strong>${freelancerName}</strong>.</p>

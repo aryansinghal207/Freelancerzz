@@ -14,6 +14,7 @@ import ClientProjectsPage from './pages/ClientProjectsPage.jsx'
 import ClientProjectDetailPage from './pages/ClientProjectDetailPage.jsx'
 import ClientInvoicesPage from './pages/ClientInvoicesPage.jsx'
 import ClientTimeReportPage from './pages/ClientTimeReportPage.jsx'
+import ClientMessagesPage from './pages/ClientMessagesPage.jsx'
 
 function AppLayout({ children }) {
   const auth = useAuth()
@@ -33,7 +34,6 @@ function AppLayout({ children }) {
         {isFreelancer && (
           <>
             <NavLink to="/clients" className={({ isActive }) => isActive ? 'active' : undefined}>Clients</NavLink>
-            <NavLink to="/projects" className={({ isActive }) => isActive ? 'active' : undefined}>Projects</NavLink>
             <NavLink to="/tasks" className={({ isActive }) => isActive ? 'active' : undefined}>Tasks</NavLink>
             <NavLink to="/timer" className={({ isActive }) => isActive ? 'active' : undefined}>Timer</NavLink>
             <NavLink to="/invoices" className={({ isActive }) => isActive ? 'active' : undefined}>Invoices</NavLink>
@@ -46,6 +46,7 @@ function AppLayout({ children }) {
             <NavLink to="/client/dashboard" className={({ isActive }) => isActive ? 'active' : undefined}>Dashboard</NavLink>
             <NavLink to="/client/projects" className={({ isActive }) => isActive ? 'active' : undefined}>Projects</NavLink>
             <NavLink to="/client/invoices" className={({ isActive }) => isActive ? 'active' : undefined}>Invoices</NavLink>
+            <NavLink to="/client/messages" className={({ isActive }) => isActive ? 'active' : undefined}>💬 Messages</NavLink>
             <NavLink to="/client/time-report" className={({ isActive }) => isActive ? 'active' : undefined}>Time Report</NavLink>
           </>
         )}
@@ -112,6 +113,7 @@ export default function App() {
         <Route path="/client/dashboard" element={isClient ? <ClientDashboardPage /> : <Navigate to="/login" replace />} />
         <Route path="/client/projects" element={isClient ? <ClientProjectsPage /> : <Navigate to="/login" replace />} />
         <Route path="/client/projects/:id" element={isClient ? <ClientProjectDetailPage /> : <Navigate to="/login" replace />} />
+        <Route path="/client/messages" element={isClient ? <ClientMessagesPage /> : <Navigate to="/login" replace />} />
         <Route path="/client/invoices" element={isClient ? <ClientInvoicesPage /> : <Navigate to="/login" replace />} />
         <Route path="/client/time-report" element={isClient ? <ClientTimeReportPage /> : <Navigate to="/login" replace />} />
       </Routes>

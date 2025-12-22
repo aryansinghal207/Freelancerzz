@@ -6,6 +6,10 @@ import Client from '../models/Client.js';
 
 // Get client's own information
 export async function getClientInfo(req, res) {
+  if (!req.userClientId) {
+    return res.status(400).json({ message: 'Client ID not found. Please contact your freelancer.' });
+  }
+  
   const client = await Client.findById(req.userClientId);
   if (!client) return res.status(404).json({ message: 'Client not found' });
   res.json(client);
@@ -13,6 +17,10 @@ export async function getClientInfo(req, res) {
 
 // List all projects for this client
 export async function listClientProjects(req, res) {
+  if (!req.userClientId) {
+    return res.status(400).json({ message: 'Client ID not found. Please contact your freelancer.' });
+  }
+  
   const projects = await Project.find({ clientId: req.userClientId })
     .populate('userId', 'name email')
     .sort({ createdAt: -1 });
@@ -76,6 +84,10 @@ export async function getClientWorkSessions(req, res) {
 
 // Get invoices for this client
 export async function getClientInvoices(req, res) {
+  if (!req.userClientId) {
+    return res.status(400).json({ message: 'Client ID not found. Please contact your freelancer.' });
+  }
+  
   const invoices = await Invoice.find({ clientId: req.userClientId })
     .populate('projectId', 'name')
     .sort({ issueDate: -1 });
@@ -95,6 +107,10 @@ export async function getClientInvoice(req, res) {
 
 // Get client dashboard summary
 export async function getClientDashboard(req, res) {
+  if (!req.userClientId) {
+    return res.status(400).json({ message: 'Client ID not found. Please contact your freelancer.' });
+  }
+  
   const projects = await Project.find({ clientId: req.userClientId });
   const projectIds = projects.map(p => p._id);
   
@@ -178,4 +194,27 @@ export async function getClientTimeReport(req, res) {
     totalMinutes: sessions.reduce((sum, s) => sum + (s.durationMinutes || 0), 0),
     totalHours: Math.round(sessions.reduce((sum, s) => sum + (s.durationMinutes || 0), 0) / 60 * 100) / 100
   });
+}
+
+// Mark all client invoices as paid
+export async function markAllInvoicesPaid(req, res) {
+  if (!req.userClientId) {
+    return res.status(400).json({ message: 'Client ID not found. Please contact your freelancer.' });
+  }
+  
+  try {
+    const result = await Invoice.updateMany(
+      { clientId: req.userClientId, status: { $ne: 'paid' } },
+      { $set: { status: 'paid', paidAt: new Date() } }
+    );
+    
+    res.json({ 
+      success: true, 
+      message: `${result.modifiedCount} invoice(s) marked as paid`,
+      modifiedCount: result.modifiedCount 
+    });
+  } catch (error) {
+    console.error('Error marking invoices as paid:', error);
+    res.status(500).json({ message: 'Failed to mark invoices as paid' });
+  }
 }

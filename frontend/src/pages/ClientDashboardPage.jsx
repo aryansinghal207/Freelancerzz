@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { getClientDashboard } from '../api'
+import { getClientDashboard, markAllInvoicesPaid } from '../api'
+import PaymentModal from '../components/PaymentModal'
 
 export default function ClientDashboardPage() {
   const [dashboard, setDashboard] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
 
   useEffect(() => {
     loadDashboard()
@@ -13,13 +15,20 @@ export default function ClientDashboardPage() {
     try {
       setLoading(true)
       const data = await getClientDashboard()
+      console.log('Dashboard data received:', data)
       setDashboard(data)
     } catch (err) {
       console.error('Failed to load dashboard:', err)
-      alert('Failed to load dashboard')
+      const errorMsg = err.response?.data?.message || 'Failed to load dashboard'
+      alert(errorMsg)
     } finally {
       setLoading(false)
     }
+  }
+
+  async function handleMarkPaid() {
+    await markAllInvoicesPaid()
+    await loadDashboard()
   }
 
   if (loading) return <div>Loading dashboard...</div>
@@ -43,14 +52,31 @@ export default function ClientDashboardPage() {
         
         <div style={{ padding: 16, border: '1px solid #ddd', borderRadius: 8 }}>
           <h3>Total Hours</h3>
-          <div style={{ fontSize: 24, fontWeight: 'bold' }}>{dashboard?.totalHours || 0}</div>
+          <div style={{ fontSize: 24, fontWeight: 'bold' }}>{(dashboard?.totalHours || 0).toFixed(2)}</div>
           <div style={{ fontSize: 14, color: '#666' }}>Hours Logged</div>
         </div>
         
         <div style={{ padding: 16, border: '1px solid #ddd', borderRadius: 8 }}>
           <h3>Total Invoiced</h3>
-          <div style={{ fontSize: 24, fontWeight: 'bold' }}>₹{dashboard?.totalInvoiced || 0}</div>
-          <div style={{ fontSize: 14, color: '#666' }}>₹{dashboard?.pendingAmount || 0} Pending</div>
+          <div style={{ fontSize: 24, fontWeight: 'bold' }}>₹{(dashboard?.totalInvoiced || 0).toFixed(2)}</div>
+          <div style={{ fontSize: 14, color: '#666', marginBottom: 12 }}>₹{(dashboard?.pendingAmount || 0).toFixed(2)} Pending</div>
+          {dashboard?.pendingAmount > 0 && (
+            <button 
+              onClick={() => setShowPaymentModal(true)}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#2196f3',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 'bold'
+              }}
+            >
+              💳 Pay Now
+            </button>
+          )}
         </div>
       </div>
 
@@ -97,6 +123,14 @@ export default function ClientDashboardPage() {
           )}
         </div>
       </div>
+
+      <PaymentModal 
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onMarkPaid={handleMarkPaid}
+        totalAmount={dashboard?.totalInvoiced || 0}
+        pendingAmount={dashboard?.pendingAmount || 0}
+      />
     </div>
   )
 }

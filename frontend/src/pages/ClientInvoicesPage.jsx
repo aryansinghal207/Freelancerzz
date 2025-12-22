@@ -16,7 +16,8 @@ export default function ClientInvoicesPage() {
       setInvoices(data)
     } catch (err) {
       console.error('Failed to load invoices:', err)
-      alert('Failed to load invoices')
+      const errorMsg = err.response?.data?.message || 'Failed to load invoices'
+      alert(errorMsg)
     } finally {
       setLoading(false)
     }
@@ -29,7 +30,14 @@ export default function ClientInvoicesPage() {
       <h1>My Invoices</h1>
       
       {invoices.length === 0 ? (
-        <div>No invoices found</div>
+        <div style={{ 
+          padding: '40px',
+          textAlign: 'center',
+          color: '#666'
+        }}>
+          <p style={{ fontSize: '18px', marginBottom: '8px' }}>No invoices yet</p>
+          <p style={{ fontSize: '14px' }}>Your freelancer hasn't created any invoices for you yet.</p>
+        </div>
       ) : (
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>

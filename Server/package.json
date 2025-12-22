@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "clean-db": "node src/utils/cleanDatabase.js",
+    "fix-client-users": "node src/utils/fixClientUsers.js"
   },
   "keywords": [],
   "author": "",
@@ -23,7 +25,9 @@
     "mongoose": "^8.18.2",
     "morgan": "^1.10.1",
     "nodemailer": "^7.0.6",
-    "pdfkit": "^0.17.2"
+    "pdfkit": "^0.17.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
