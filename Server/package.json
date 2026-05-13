@@ -6,6 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:db-push": "prisma db push",
     "clean-db": "node src/utils/cleanDatabase.js",
     "fix-client-users": "node src/utils/fixClientUsers.js"
   },
@@ -22,12 +24,14 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.18.2",
     "morgan": "^1.10.1",
     "nodemailer": "^7.0.6",
     "pdfkit": "^0.17.2",
+    "prisma": "^5.16.0",
+    "pg": "^8.12.0",
     "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "@prisma/client": "^5.16.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

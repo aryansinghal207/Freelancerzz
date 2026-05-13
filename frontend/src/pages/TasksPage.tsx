@@ -34,13 +34,13 @@ export default function TasksPage() {
   }
 
   async function changeStatus(t, next) {
-    await updateTask(t._id, { status: next })
+    await updateTask(t.id, { status: next })
     setTasks(await getTasks(projectId))
   }
 
   async function remove(t) {
     if (!confirm('Delete task?')) return
-    await deleteTask(t._id)
+    await deleteTask(t.id)
     setTasks(await getTasks(projectId))
   }
 
@@ -52,7 +52,7 @@ export default function TasksPage() {
       <div className="row" style={{ gap: 8, marginBottom: 8 }}>
         <select value={projectId} onChange={e => setProjectId(e.target.value)}>
           <option value="">All projects</option>
-          {projects.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
+          {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
         {/* Move quick add controls close to project selector */}
         <select value={status} onChange={e => setStatus(e.target.value)}>

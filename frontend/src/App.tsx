@@ -1,20 +1,21 @@
 import { Routes, Route, Link, NavLink, Navigate, useNavigate } from 'react-router-dom'
-import { useAuth } from './AuthContext.jsx'
-import AuthPage from './pages/AuthPage.jsx'
+import { useEffect } from 'react'
+import { useAuth } from './AuthContext'
+import AuthPage from './pages/AuthPage'
 import './App.css'
-import ClientsPage from './pages/ClientsPage.jsx'
-import ProjectsPage from './pages/ProjectsPage.jsx'
-import TasksPage from './pages/TasksPage.jsx'
-import TimerPage from './pages/TimerPage.jsx'
-import InvoicesPage from './pages/InvoicesPage.jsx'
-import ReportsPage from './pages/ReportsPage.jsx'
-import CalendarPage from './pages/CalendarPage.jsx'
-import ClientDashboardPage from './pages/ClientDashboardPage.jsx'
-import ClientProjectsPage from './pages/ClientProjectsPage.jsx'
-import ClientProjectDetailPage from './pages/ClientProjectDetailPage.jsx'
-import ClientInvoicesPage from './pages/ClientInvoicesPage.jsx'
-import ClientTimeReportPage from './pages/ClientTimeReportPage.jsx'
-import ClientMessagesPage from './pages/ClientMessagesPage.jsx'
+import ClientsPage from './pages/ClientsPage'
+import ProjectsPage from './pages/ProjectsPage'
+import TasksPage from './pages/TasksPage'
+import TimerPage from './pages/TimerPage'
+import InvoicesPage from './pages/InvoicesPage'
+import ReportsPage from './pages/ReportsPage'
+import CalendarPage from './pages/CalendarPage'
+import ClientDashboardPage from './pages/ClientDashboardPage'
+import ClientProjectsPage from './pages/ClientProjectsPage'
+import ClientProjectDetailPage from './pages/ClientProjectDetailPage'
+import ClientInvoicesPage from './pages/ClientInvoicesPage'
+import ClientTimeReportPage from './pages/ClientTimeReportPage'
+import ClientMessagesPage from './pages/ClientMessagesPage'
 
 function AppLayout({ children }) {
   const auth = useAuth()
@@ -27,6 +28,12 @@ function AppLayout({ children }) {
 
   const isFreelancer = auth.isFreelancer()
   const isClient = auth.isClient()
+
+  useEffect(() => {
+    if (auth?.user?.id && auth.refresh) {
+      auth.refresh().catch(() => {})
+    }
+  }, [auth])
 
   return (
     <div className="app-shell">

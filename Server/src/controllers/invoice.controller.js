@@ -1,8 +1,5 @@
 import dayjs from 'dayjs';
-import Invoice from '../models/Invoice.js';
-import WorkSession from '../models/WorkSession.js';
-import Client from '../models/Client.js';
-import Project from '../models/Project.js';
+import prisma from '../prisma.js';
 import { generateInvoicePDF } from '../utils/pdf.js';
 import nodemailer from 'nodemailer';
 import fs from 'fs';
@@ -17,23 +14,26 @@ export async function createInvoiceFromRange(req, res) {
   const fromDate = from ? dayjs(from).toDate() : new Date(0);
   const toDate = to ? dayjs(to).toDate() : new Date();
 
-  const project = await Project.findOne({ _id: projectId, userId: req.userId });
+  const project = await prisma.project.findFirst({ where: { id: projectId, userId: req.userId } });
   if (!project) return res.status(404).json({ message: 'Project not found' });
   const derivedClientId = project.clientId;
 
-  const sessions = await WorkSession.find({
-    userId: req.userId,
-    projectId,
-    startTime: { $gte: fromDate, $lte: toDate },
-    invoiced: false,
-    endTime: { $ne: null },
-  }).sort({ startTime: 1 });
+  const sessions = await prisma.workSession.findMany({
+    where: {
+      userId: req.userId,
+      projectId,
+      invoiced: false,
+      endTime: { not: null },
+      startTime: { gte: fromDate, lte: toDate }
+    },
+    orderBy: { startTime: 'asc' }
+  });
 
   const items = sessions.map((s) => {
     const hours = toHours(s.durationMinutes);
     const rate = s.hourlyRate || 0;
     return {
-      workSessionId: s._id,
+      workSessionId: s.id,
       description: s.note || 'Work session',
       hours,
       rate,
@@ -44,48 +44,56 @@ export async function createInvoiceFromRange(req, res) {
   const subtotal = items.reduce((sum, i) => sum + i.amount, 0);
   const taxAmount = subtotal * (Number(taxPercent) / 100);
   const total = subtotal + taxAmount;
-
   const invoiceNumber = number || `INV-${Date.now()}`;
 
-  const invoice = await Invoice.create({
-    userId: req.userId,
-    clientId: derivedClientId,
-    projectId,
-    number: invoiceNumber,
-    items,
-    subtotal,
-    taxPercent: Number(taxPercent),
-    taxAmount,
-    total,
-    currency,
-    status: 'draft',
+  const invoice = await prisma.invoice.create({
+    data: {
+      userId: req.userId,
+      clientId: derivedClientId,
+      projectId,
+      number: invoiceNumber,
+      items,
+      subtotal,
+      taxPercent: Number(taxPercent),
+      taxAmount,
+      total,
+      currency,
+      status: 'draft'
+    }
   });
 
-  await WorkSession.updateMany({ _id: { $in: sessions.map((s) => s._id) } }, { $set: { invoiced: true, invoiceId: invoice._id } });
+  await prisma.workSession.updateMany({
+    where: { id: { in: sessions.map((s) => s.id) } },
+    data: { invoiced: true, invoiceId: invoice.id }
+  });
 
-  const client = await Client.findById(derivedClientId);
+  const client = await prisma.client.findUnique({ where: { id: derivedClientId } });
   const pdfPath = await generateInvoicePDF({ invoice, client, project });
-  invoice.pdfPath = pdfPath;
-  await invoice.save();
+  await prisma.invoice.update({ where: { id: invoice.id }, data: { pdfPath } });
 
-  res.status(201).json(invoice);
+  res.status(201).json({ ...invoice, pdfPath });
 }
 
 export async function listInvoices(req, res) {
-  const invoices = await Invoice.find({ userId: req.userId }).sort({ createdAt: -1 });
+  const invoices = await prisma.invoice.findMany({
+    where: { userId: req.userId },
+    orderBy: { createdAt: 'desc' }
+  });
   res.json(invoices);
 }
 
 export async function getInvoice(req, res) {
-  const inv = await Invoice.findOne({ _id: req.params.id, userId: req.userId });
+  const inv = await prisma.invoice.findFirst({ where: { id: req.params.id, userId: req.userId } });
   if (!inv) return res.status(404).json({ message: 'Not found' });
   res.json(inv);
 }
 
 export async function sendInvoiceEmail(req, res) {
-  const inv = await Invoice.findOne({ _id: req.params.id, userId: req.userId });
+  const inv = await prisma.invoice.findFirst({ where: { id: req.params.id, userId: req.userId } });
   if (!inv) return res.status(404).json({ message: 'Not found' });
-  const client = await Client.findById(inv.clientId);
+
+  const client = await prisma.client.findUnique({ where: { id: inv.clientId } });
+  if (!client) return res.status(404).json({ message: 'Client not found' });
 
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -102,27 +110,25 @@ export async function sendInvoiceEmail(req, res) {
     attachments: inv.pdfPath ? [{ filename: `${inv.number}.pdf`, path: inv.pdfPath }] : [],
   });
 
-  inv.status = 'sent';
-  await inv.save();
+  await prisma.invoice.update({ where: { id: inv.id }, data: { status: 'sent' } });
   res.json({ success: true });
 }
 
-
 export async function deleteInvoice(req, res) {
-  const inv = await Invoice.findOne({ _id: req.params.id, userId: req.userId });
+  const inv = await prisma.invoice.findFirst({ where: { id: req.params.id, userId: req.userId } });
   if (!inv) return res.status(404).json({ message: 'Not found' });
+
   try {
-    // Mark related sessions as not invoiced
-    await WorkSession.updateMany({ invoiceId: inv._id }, { $set: { invoiced: false, invoiceId: null } });
-    // Remove PDF file if present
+    await prisma.workSession.updateMany({
+      where: { invoiceId: inv.id },
+      data: { invoiced: false, invoiceId: null }
+    });
     if (inv.pdfPath && fs.existsSync(inv.pdfPath)) {
-      try { fs.unlinkSync(inv.pdfPath); } catch (_) { /* ignore */ }
+      try { fs.unlinkSync(inv.pdfPath); } catch (_) {}
     }
-    await inv.deleteOne();
+    await prisma.invoice.delete({ where: { id: inv.id } });
     return res.json({ success: true });
   } catch (e) {
     return res.status(500).json({ message: 'Failed to delete invoice' });
   }
 }
-
-

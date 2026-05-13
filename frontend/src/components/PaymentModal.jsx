@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import paymentQr from '../assets/payment-qr.jpeg'
 
 export default function PaymentModal({ isOpen, onClose, onMarkPaid, totalAmount, pendingAmount }) {
   const [marking, setMarking] = useState(false)
@@ -73,58 +74,28 @@ export default function PaymentModal({ isOpen, onClose, onMarkPaid, totalAmount,
             }}>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ 
-                  width: '280px', 
-                  height: '280px', 
+                  width: '300px', 
                   backgroundColor: 'white',
                   padding: '15px',
-                  borderRadius: '8px',
+                  borderRadius: '18px',
                   border: '2px solid #ddd',
                   display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  alignItems: 'center'
                 }}>
-                  {/* QR Code pattern - Simplified representation */}
-                  <div style={{
-                    width: '220px',
-                    height: '220px',
-                    background: `
-                      repeating-linear-gradient(0deg, #000 0px, #000 10px, transparent 10px, transparent 20px),
-                      repeating-linear-gradient(90deg, #000 0px, #000 10px, transparent 10px, transparent 20px),
-                      linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%)
-                    `,
-                    backgroundSize: '100% 100%, 100% 100%, 40px 40px',
-                    position: 'relative',
-                    border: '8px solid #000'
-                  }}>
-                    {/* Corner markers */}
-                    <div style={{ position: 'absolute', top: '5px', left: '5px', width: '40px', height: '40px', border: '8px solid #000', backgroundColor: '#fff' }}>
-                      <div style={{ width: '16px', height: '16px', backgroundColor: '#000', margin: '4px' }}></div>
-                    </div>
-                    <div style={{ position: 'absolute', top: '5px', right: '5px', width: '40px', height: '40px', border: '8px solid #000', backgroundColor: '#fff' }}>
-                      <div style={{ width: '16px', height: '16px', backgroundColor: '#000', margin: '4px' }}></div>
-                    </div>
-                    <div style={{ position: 'absolute', bottom: '5px', left: '5px', width: '40px', height: '40px', border: '8px solid #000', backgroundColor: '#fff' }}>
-                      <div style={{ width: '16px', height: '16px', backgroundColor: '#000', margin: '4px' }}></div>
-                    </div>
-                    {/* Center text */}
-                    <div style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      backgroundColor: 'white',
-                      padding: '8px',
-                      borderRadius: '4px',
-                      fontSize: '10px',
-                      fontWeight: 'bold'
-                    }}>
-                      SCAN TO PAY
-                    </div>
-                  </div>
+                  <img
+                    src={paymentQr}
+                    alt="Payment QR Code"
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      borderRadius: '16px',
+                      objectFit: 'cover'
+                    }}
+                  />
                 </div>
-                <p style={{ marginTop: '12px', fontSize: '16px', fontWeight: 'bold', fontFamily: 'monospace' }}>
-                  8727976531@yapl
+                <p style={{ marginTop: '16px', fontSize: '16px', fontWeight: 'bold', fontFamily: 'monospace' }}>
+                  aryansinghal207@oksbi
                 </p>
               </div>
             </div>

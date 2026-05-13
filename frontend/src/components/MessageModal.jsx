@@ -18,8 +18,8 @@ export default function MessageModal({ clientId, clientName, freelancerId, onClo
     if (socket) {
       const handleNewMessage = (data) => {
         // Only add message if it's from someone else (not from current user)
-        const senderId = typeof data.senderId === 'object' ? data.senderId._id : data.senderId;
-        if (data.clientId === clientId && senderId !== auth.user._id) {
+        const senderId = typeof data.senderId === 'object' ? data.senderId.id : data.senderId;
+        if (data.clientId === clientId && senderId !== auth.user.id) {
           setMessages(prev => [...prev, data]);
           markMessagesAsRead(clientId);
         }
@@ -31,7 +31,7 @@ export default function MessageModal({ clientId, clientName, freelancerId, onClo
         socket.off('new-message', handleNewMessage);
       };
     }
-  }, [clientId, socket, auth.user._id]);
+  }, [clientId, socket, auth.user.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -126,9 +126,9 @@ export default function MessageModal({ clientId, clientName, freelancerId, onClo
             </div>
           )}
           {messages.map((msg, idx) => {
-            const isOwn = msg.senderId._id === auth.user._id || msg.senderId === auth.user._id;
+            const isOwn = msg.senderId.id === auth.user.id || msg.senderId === auth.user.id;
             return (
-              <div key={idx} style={{
+              <div key={msg.id || idx} style={{
                 display: 'flex',
                 justifyContent: isOwn ? 'flex-end' : 'flex-start'
               }}>

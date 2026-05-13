@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import prisma from '../prisma.js';
 
 export async function authenticate(req, res, next) {
   try {
@@ -7,14 +7,16 @@ export async function authenticate(req, res, next) {
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : req.cookies?.token;
     if (!token) return res.status(401).json({ message: 'Unauthorized' });
     const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev_secret');
-    
-    // Fetch user to get role and clientId
-    const user = await User.findById(payload.id).select('-passwordHash');
+
+    const user = await prisma.user.findUnique({
+      where: { id: payload.id },
+      select: { id: true, name: true, email: true, role: true, clientId: true }
+    });
     if (!user) return res.status(401).json({ message: 'User not found' });
-    
-    req.userId = user._id.toString();
+
+    req.userId = user.id;
     req.userRole = user.role;
-    req.userClientId = user.clientId ? user.clientId.toString() : null;
+    req.userClientId = user.clientId;
     req.user = user;
     next();
   } catch (e) {

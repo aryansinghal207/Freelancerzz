@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react'
-import { login as apiLogin, register as apiRegister, registerClient as apiRegisterClient } from './api'
+import { login as apiLogin, register as apiRegister, registerClient as apiRegisterClient, getProfile } from './api'
 
 const AuthCtx = createContext(null)
 
@@ -28,6 +28,12 @@ export function AuthProvider({ children }) {
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
       setUser(data.user)
+    },
+    async refresh() {
+      if (!user?.id) return
+      const data = await getProfile()
+      localStorage.setItem('user', JSON.stringify(data))
+      setUser(data)
     },
     logout() {
       localStorage.removeItem('token')

@@ -37,7 +37,7 @@ export const updateClient = async (id, payload) => (await api.put(`/clients/${id
 export const deleteClient = async (id) => (await api.delete(`/clients/${id}`)).data
 
 // Projects
-export const getProjects = async (clientId) => (await api.get('/projects', { params: { clientId } })).data
+export const getProjects = async (clientId?: string) => (await api.get('/projects', { params: clientId ? { clientId } : undefined })).data
 export const createProject = async (payload) => (await api.post('/projects', payload)).data
 export const updateProject = async (id, payload) => (await api.put(`/projects/${id}`, payload)).data
 export const deleteProject = async (id) => (await api.delete(`/projects/${id}`)).data
@@ -81,6 +81,8 @@ export const getClientInvoices = async () => (await api.get('/client-portal/invo
 export const getClientInvoice = async (id) => (await api.get(`/client-portal/invoices/${id}`)).data
 export const getClientTimeReport = async (params) => (await api.get('/client-portal/time-report', { params })).data
 export const markAllInvoicesPaid = async () => (await api.post('/client-portal/invoices/mark-paid')).data
+
+export const getProfile = async () => (await api.get('/auth/me')).data
 
 // Messages
 export const sendMessage = async (payload) => (await api.post('/messages/send', payload)).data

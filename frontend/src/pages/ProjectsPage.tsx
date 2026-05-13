@@ -41,7 +41,7 @@ export default function ProjectsPage() {
   }
 
   function clientNameOf(p) {
-    const c = clients.find(c => c._id === p.clientId)
+    const c = clients.find(c => c.id === p.clientId)
     return c ? c.name : '—'
   }
 
@@ -51,7 +51,7 @@ export default function ProjectsPage() {
       <form onSubmit={submit} style={{ display: 'grid', gap: 8, maxWidth: 520 }}>
         <select value={form.clientId} onChange={e => setForm({ ...form, clientId: e.target.value })} required>
           <option value="">Select client</option>
-          {clients.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+          {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         <input placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
         <input placeholder="Description" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />

@@ -1,12 +1,12 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import mongoose from 'mongoose';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import prisma from './prisma.js';
 
 import authRoutes from './routes/auth.routes.js';
 import clientRoutes from './routes/client.routes.js';
@@ -38,12 +38,6 @@ const io = new Server(httpServer, {
 });
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/freelancer_app';
-
-// Enable verbose mongoose logs in dev
-if (process.env.NODE_ENV !== 'production') {
-  mongoose.set('debug', true);
-}
 
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173', credentials: true }));
 app.use(express.json());
@@ -54,11 +48,13 @@ app.get('/', (_req, res) => {
   res.json({ status: 'ok', service: 'freelancer-api' });
 });
 
-app.get('/health', (_req, res) => {
-  res.json({
-    status: 'ok',
-    db: mongoose.connection.readyState, 
-  });
+app.get('/health', async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    return res.json({ status: 'ok', db: 'connected' });
+  } catch (error) {
+    return res.status(503).json({ status: 'error', db: 'disconnected', error: error.message });
+  }
 });
 
 app.use('/api/auth', authRoutes);
@@ -119,11 +115,9 @@ app.use((err, _req, res, _next) => {
 
 async function start() {
   try {
-    console.log('Connecting to MongoDB...', MONGO_URI);
-    mongoose.connection.on('connected', () => console.log('MongoDB connected'));
-    mongoose.connection.on('error', (err) => console.error('MongoDB connection error:', err));
-    mongoose.connection.on('disconnected', () => console.warn('MongoDB disconnected'));
-    await mongoose.connect(MONGO_URI);
+    console.log('Connecting to PostgreSQL...');
+    await prisma.$connect();
+    console.log('PostgreSQL connected');
     console.log('Starting HTTP server on port', PORT);
     httpServer.listen(PORT, () => {
       console.log(`API running on :${PORT}`);

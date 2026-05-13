@@ -65,7 +65,7 @@ export default function ClientProjectDetailPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
           {tasks.map(task => (
-            <div key={task._id} style={{ padding: 12, border: '1px solid #ddd', borderRadius: 4 }}>
+            <div key={task.id} style={{ padding: 12, border: '1px solid #ddd', borderRadius: 4 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                   <strong>{task.title}</strong>
@@ -102,7 +102,7 @@ export default function ClientProjectDetailPage() {
             </thead>
             <tbody>
               {sessions.map(session => (
-                <tr key={session._id} style={{ borderBottom: '1px solid #eee' }}>
+                <tr key={session.id} style={{ borderBottom: '1px solid #eee' }}>
                   <td style={{ padding: 8 }}>
                     {new Date(session.startTime).toLocaleDateString()}
                   </td>

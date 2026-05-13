@@ -34,7 +34,7 @@ export default function ClientProjectsPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {projects.map(project => (
-            <div key={project._id} style={{ padding: 16, border: '1px solid #ddd', borderRadius: 8 }}>
+            <div key={project.id} style={{ padding: 16, border: '1px solid #ddd', borderRadius: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                 <div>
                   <h3 style={{ margin: '0 0 8px 0' }}>{project.name}</h3>
@@ -56,7 +56,7 @@ export default function ClientProjectsPage() {
                     )}
                   </div>
                 </div>
-                <Link to={`/client/projects/${project._id}`}>
+                <Link to={`/client/projects/${project.id}`}>
                   <button>View Details</button>
                 </Link>
               </div>

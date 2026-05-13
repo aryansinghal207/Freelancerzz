@@ -38,12 +38,12 @@ export default function TimerPage() {
   }
 
   async function handleStop() {
-    const ws = await stopTimer(running._id)
+    const ws = await stopTimer(running.id)
     setRunning(null)
     setSessions(await listSessions({ projectId }))
   }
 
-  async function handleManual(minsInput) {
+  async function handleManual(minsInput?: number) {
     const mins = typeof minsInput === 'number' ? minsInput : Number(prompt('Duration minutes'))
     if (!mins) return
     await manualLog({ projectId, durationMinutes: mins, note })
@@ -52,7 +52,7 @@ export default function TimerPage() {
   }
 
   async function remove(s) {
-    await deleteSession(s._id)
+    await deleteSession(s.id)
     setSessions(await listSessions({ projectId }))
   }
 
@@ -87,7 +87,7 @@ export default function TimerPage() {
       <div className="row" style={{ marginBottom: 8 }}>
         <select value={projectId} onChange={e => setProjectId(e.target.value)}>
           <option value="">Select project</option>
-          {projects.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
+          {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
         <input type="date" value={date} onChange={e => setDate(e.target.value)} />
         <div style={{ marginLeft: 'auto' }}>
@@ -112,7 +112,7 @@ export default function TimerPage() {
 
           <ul style={{ marginTop: 12 }}>
             {sessions.map(s => (
-              <li key={s._id} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <li key={s.id} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <span>{dayjs(s.startTime).format('HH:mm')}{s.endTime ? ` – ${dayjs(s.endTime).format('HH:mm')}` : ''} {s.note||''}</span>
                 <span style={{ marginLeft: 'auto' }}>{formatMinutesToHMS((s.durationMinutes||0))} · ₹{amountOf(s).toFixed(2)}</span>
                 <button className="danger" onClick={() => remove(s)}>Delete</button>
@@ -126,7 +126,7 @@ export default function TimerPage() {
             {formatSecondsToHMS(runningSeconds)}
           </div>
           <div style={{ color: 'var(--muted)' }}>
-            {running ? `Running on ${projects.find(p => p._id === running.projectId)?.name || 'Project'} ` : 'No active timer'}
+            {running ? `Running on ${projects.find(p => p.id === running.projectId)?.name || 'Project'} ` : 'No active timer'}
           </div>
           <hr style={{ borderColor: 'var(--border)', margin: '12px 0' }} />
           <div className="col">

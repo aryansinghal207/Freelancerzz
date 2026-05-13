@@ -45,7 +45,7 @@ export default function InvoicesPage() {
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
         <select value={projectId} onChange={e => setProjectId(e.target.value)}>
           <option value="">Select project</option>
-          {projects.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
+          {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
         <input type="date" value={from} onChange={e => setFrom(e.target.value)} />
         <input type="date" value={to} onChange={e => setTo(e.target.value)} />
@@ -53,11 +53,11 @@ export default function InvoicesPage() {
       </div>
       <ul style={{ marginTop: 12 }}>
         {invoices.map(inv => (
-          <li key={inv._id}>
+          <li key={inv.id}>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <span>{inv.number} - ₹{inv.total} {inv.currency}</span>
               <button onClick={() => openPdf(inv)}>Open PDF</button>
-              <button className="danger" onClick={async () => { await deleteInvoice(inv._id); setInvoices(await listInvoices()) }}>Delete</button>
+              <button className="danger" onClick={async () => { await deleteInvoice(inv.id); setInvoices(await listInvoices()) }}>Delete</button>
             </div>
             <div style={{ color: 'var(--muted)' }}>
               Total Time: {formatHoursToHMS((inv.items || []).reduce((sum,i)=>sum + (i.hours||0),0))}

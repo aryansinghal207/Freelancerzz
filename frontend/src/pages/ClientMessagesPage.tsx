@@ -18,14 +18,14 @@ export default function ClientMessagesPage() {
   useEffect(() => {
     if (clientInfo) {
       loadMessages();
-      markMessagesAsRead(clientInfo._id);
+      markMessagesAsRead(clientInfo.id);
 
       if (socket) {
         const handleNewMessage = (data) => {
-          const senderId = typeof data.senderId === 'object' ? data.senderId._id : data.senderId;
-          if (data.clientId === clientInfo._id && senderId !== auth.user._id) {
+          const senderId = typeof data.senderId === 'object' ? data.senderId.id : data.senderId;
+          if (data.clientId === clientInfo.id && senderId !== auth.user.id) {
             setMessages(prev => [...prev, data]);
-            markMessagesAsRead(clientInfo._id);
+            markMessagesAsRead(clientInfo.id);
           }
         };
         
@@ -36,7 +36,7 @@ export default function ClientMessagesPage() {
         };
       }
     }
-  }, [clientInfo, socket, auth.user._id]);
+  }, [clientInfo, socket, auth.user.id]);
 
   async function loadClientInfo() {
     try {
@@ -50,7 +50,7 @@ export default function ClientMessagesPage() {
   async function loadMessages() {
     if (!clientInfo) return;
     try {
-      const data = await getMessages(clientInfo._id);
+      const data = await getMessages(clientInfo.id);
       setMessages(data);
     } catch (err) {
       console.error('Failed to load messages:', err);
@@ -64,7 +64,7 @@ export default function ClientMessagesPage() {
     setLoading(true);
     try {
       const data = await sendMessage({
-        clientId: clientInfo._id,
+        clientId: clientInfo.id,
         message: newMessage.trim()
       });
 
@@ -75,7 +75,7 @@ export default function ClientMessagesPage() {
       if (socket && data.recipientUserId) {
         socket.emit('send-message', {
           ...data,
-          clientId: clientInfo._id,
+          clientId: clientInfo.id,
           recipientId: data.recipientUserId
         });
       }
@@ -118,9 +118,9 @@ export default function ClientMessagesPage() {
             </div>
           )}
           {messages.map((msg, idx) => {
-            const isOwn = msg.senderId._id === auth.user._id || msg.senderId === auth.user._id;
+            const isOwn = msg.senderId.id === auth.user.id || msg.senderId === auth.user.id;
             return (
-              <div key={idx} style={{
+              <div key={msg.id || idx} style={{
                 display: 'flex',
                 justifyContent: isOwn ? 'flex-end' : 'flex-start'
               }}>

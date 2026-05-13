@@ -1,33 +1,29 @@
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import prisma from '../prisma.js';
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/freelancer_app';
-
 async function cleanDatabase() {
   try {
-    console.log('Connecting to MongoDB...');
-    await mongoose.connect(MONGO_URI);
-    console.log('✅ Connected to MongoDB');
+    console.log('Connecting to PostgreSQL...');
+    await prisma.$connect();
+    console.log('? Connected to PostgreSQL');
 
-    const collections = await mongoose.connection.db.collections();
-    
-    console.log('\n🗑️  Dropping all collections...\n');
-    
-    for (let collection of collections) {
-      const name = collection.collectionName;
-      await collection.drop();
-      console.log(`✅ Dropped collection: ${name}`);
-    }
+    console.log('\n???  Cleaning all tables...\n');
 
-    console.log('\n✅ Database cleaned successfully!');
-    console.log('All collections have been removed. You can now start fresh.\n');
-    
-    await mongoose.connection.close();
+    await prisma.message.deleteMany();
+    await prisma.invoice.deleteMany();
+    await prisma.workSession.deleteMany();
+    await prisma.task.deleteMany();
+    await prisma.project.deleteMany();
+    await prisma.client.deleteMany();
+    await prisma.user.deleteMany();
+
+    console.log('\n? Database cleaned successfully! All tables are empty.\n');
+    await prisma.$disconnect();
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error cleaning database:', error);
+    console.error('? Error cleaning database:', error);
     process.exit(1);
   }
 }

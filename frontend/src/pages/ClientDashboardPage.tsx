@@ -86,7 +86,7 @@ export default function ClientDashboardPage() {
           {dashboard?.recentProjects?.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {dashboard.recentProjects.map(project => (
-                <div key={project._id} style={{ padding: 12, border: '1px solid #ddd', borderRadius: 4 }}>
+                <div key={project.id} style={{ padding: 12, border: '1px solid #ddd', borderRadius: 4 }}>
                   <div style={{ fontWeight: 'bold' }}>{project.name}</div>
                   <div style={{ fontSize: 14, color: '#666' }}>
                     Status: <span style={{ textTransform: 'capitalize' }}>{project.status}</span>
@@ -107,7 +107,7 @@ export default function ClientDashboardPage() {
           {dashboard?.recentInvoices?.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {dashboard.recentInvoices.map(invoice => (
-                <div key={invoice._id} style={{ padding: 12, border: '1px solid #ddd', borderRadius: 4 }}>
+                <div key={invoice.id} style={{ padding: 12, border: '1px solid #ddd', borderRadius: 4 }}>
                   <div style={{ fontWeight: 'bold' }}>Invoice #{invoice.number}</div>
                   <div style={{ fontSize: 14, color: '#666' }}>
                     Amount: ₹{invoice.total} | Status: <span style={{ textTransform: 'capitalize' }}>{invoice.status}</span>

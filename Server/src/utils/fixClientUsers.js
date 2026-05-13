@@ -1,35 +1,33 @@
-import mongoose from 'mongoose';
-import User from '../models/User.js';
-import Client from '../models/Client.js';
 import dotenv from 'dotenv';
+import prisma from '../prisma.js';
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/freelancer_app';
-
 async function fixClientUsers() {
   try {
-    await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB');
+    await prisma.$connect();
+    console.log('Connected to PostgreSQL');
 
-    // Find all client users without a clientId
-    const clientUsers = await User.find({ role: 'client', clientId: null });
+    const clientUsers = await prisma.user.findMany({
+      where: { role: 'client', clientId: null }
+    });
     console.log(`Found ${clientUsers.length} client users without clientId`);
 
     for (const user of clientUsers) {
-      // Try to find a matching client by email
-      const client = await Client.findOne({ email: user.email });
-      
+      const client = await prisma.client.findFirst({ where: { email: user.email } });
       if (client) {
-        console.log(`Linking user ${user.email} to client ${client._id}`);
-        user.clientId = client._id;
-        await user.save();
+        console.log(`Linking user ${user.email} to client ${client.id}`);
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { clientId: client.id }
+        });
       } else {
         console.log(`No matching client found for user ${user.email}`);
       }
     }
 
     console.log('Done!');
+    await prisma.$disconnect();
     process.exit(0);
   } catch (error) {
     console.error('Error:', error);

@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react'
 import { getGrouped, getSummary } from '../api'
 
+type ReportGroup = {
+  hours: number
+  earnings: number
+}
+
 export default function ReportsPage() {
   const [summary, setSummary] = useState({ totalHours: 0, totalEarnings: 0 })
-  const [grouped, setGrouped] = useState({})
+  const [grouped, setGrouped] = useState<Record<string, ReportGroup>>({})
   const [period, setPeriod] = useState('month')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')

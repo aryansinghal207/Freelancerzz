@@ -9,7 +9,7 @@ export default function ClientsPage() {
     email: '', 
     phone: '', 
     address: '', 
-    defaultHourlyRate: '',
+    defaultHourlyRate: 0,
     projectName: '',
     projectDescription: '',
     projectDeadline: ''
@@ -43,7 +43,7 @@ export default function ClientsPage() {
       email: '', 
       phone: '', 
       address: '', 
-      defaultHourlyRate: '',
+      defaultHourlyRate: 0,
       projectName: '',
       projectDescription: '',
       projectDeadline: ''
@@ -63,22 +63,22 @@ export default function ClientsPage() {
     const rateStr = prompt('Default Hourly Rate', String(c.defaultHourlyRate || ''))
     if (rateStr === null) return
     const defaultHourlyRate = rateStr ? Number(rateStr) : undefined
-    await updateClient(c._id, { ...c, name, email, phone, address, defaultHourlyRate })
+    await updateClient(c.id, { ...c, name, email, phone, address, defaultHourlyRate })
     load()
   }
 
   async function remove(c) {
     if (!confirm('Delete client?')) return
-    await deleteClient(c._id)
+    await deleteClient(c.id)
     load()
   }
 
   async function toggleView(c) {
-    if (expandedId === c._id) { setExpandedId(''); return }
-    setExpandedId(c._id)
-    if (!clientProjects[c._id]) {
-      const projects = await getProjects(c._id)
-      setClientProjects(prev => ({ ...prev, [c._id]: projects }))
+    if (expandedId === c.id) { setExpandedId(''); return }
+    setExpandedId(c.id)
+    if (!clientProjects[c.id]) {
+      const projects = await getProjects(c.id)
+      setClientProjects(prev => ({ ...prev, [c.id]: projects }))
     }
   }
 
@@ -89,7 +89,7 @@ export default function ClientsPage() {
     if (!name) return
     
     try {
-      const result = await inviteClient({ clientId: c._id, email, name })
+      const result = await inviteClient({ clientId: c.id, email, name })
       if (result.emailError) {
         // Email failed but user created
         alert(`Client invited successfully!\n\n⚠️ Email delivery failed. Please share these credentials manually:\n\nEmail: ${result.clientUser.email}\nPassword: ${result.clientUser.tempPassword}`)
@@ -133,16 +133,16 @@ export default function ClientsPage() {
           <li className="empty">No clients yet. Add your first client using the form above.</li>
         )}
         {clients.map(c => (
-          <li key={c._id}>
+          <li key={c.id}>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <span>{c.name} {c.email ? `- ${c.email}` : ''}</span>
-              <button className="secondary" onClick={() => toggleView(c)}>{expandedId === c._id ? 'Hide' : 'View'}</button>
-              <button onClick={() => setMessageModal({ clientId: c._id, clientName: c.name, freelancerId: c.userId })}>💬 Message</button>
+              <button className="secondary" onClick={() => toggleView(c)}>{expandedId === c.id ? 'Hide' : 'View'}</button>
+              <button onClick={() => setMessageModal({ clientId: c.id, clientName: c.name, freelancerId: c.userId })}>💬 Message</button>
               <button onClick={() => inviteClientUser(c)}>Invite to Portal</button>
               <button onClick={() => edit(c)}>Edit</button>
               <button className="danger" onClick={() => remove(c)}>Delete</button>
             </div>
-            {expandedId === c._id && (
+            {expandedId === c.id && (
               <div style={{ marginTop: 8, borderTop: '1px solid var(--border)', paddingTop: 8 }}>
                 <div className="grid" style={{ gridTemplateColumns: 'repeat(2, minmax(0,1fr))' }}>
                   <div><strong>Email:</strong> {c.email || '-'}</div>
@@ -153,13 +153,13 @@ export default function ClientsPage() {
                 <div style={{ marginTop: 8 }}>
                   <strong>Projects</strong>
                   <ul className="list">
-                    {(clientProjects[c._id] || []).map(p => (
-                      <li key={p._id}>
+                    {(clientProjects[c.id] || []).map(p => (
+                      <li key={p.id}>
                         <span>{p.name}</span>
                         <span>{p.hourlyRate ? `₹${p.hourlyRate}` : '—'}</span>
                       </li>
                     ))}
-                    {(!clientProjects[c._id] || clientProjects[c._id].length === 0) && (
+                    {(!clientProjects[c.id] || clientProjects[c.id].length === 0) && (
                       <li><span style={{ color: 'var(--muted)' }}>No projects</span></li>
                     )}
                   </ul>

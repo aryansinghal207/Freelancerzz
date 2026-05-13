@@ -54,7 +54,7 @@ export default function ClientInvoicesPage() {
             </thead>
             <tbody>
               {invoices.map(invoice => (
-                <tr key={invoice._id} style={{ borderBottom: '1px solid #eee' }}>
+                <tr key={invoice.id} style={{ borderBottom: '1px solid #eee' }}>
                   <td style={{ padding: 12 }}>
                     <strong>{invoice.number}</strong>
                   </td>

@@ -2,10 +2,16 @@ import { useEffect, useMemo, useState } from 'react'
 import { getDaily, getMonthly, getWeekly } from '../api'
 import dayjs from 'dayjs'
 
+type GroupedData = {
+  hours: number
+  earnings: number
+  items: any[]
+}
+
 export default function CalendarPage() {
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'))
   const [view, setView] = useState('daily')
-  const [sessions, setSessions] = useState([])
+  const [sessions, setSessions] = useState<any[]>([])
 
   async function load() {
     if (view === 'daily') setSessions(await getDaily(date))
@@ -43,9 +49,9 @@ export default function CalendarPage() {
     return { totalHours, totalEarnings }
   }, [sessions])
 
-  const grouped = useMemo(() => {
+  const grouped = useMemo<Record<string, GroupedData> | null>(() => {
     if (view === 'daily') return null
-    const bucket = {}
+    const bucket: Record<string, GroupedData> = {}
     for (const s of sessions) {
       const key = dayjs(s.startTime).format('YYYY-MM-DD')
       if (!bucket[key]) bucket[key] = { hours: 0, earnings: 0, items: [] }
@@ -77,7 +83,7 @@ export default function CalendarPage() {
       {view === 'daily' && (
         <ul>
           {sessions.map(s => (
-            <li key={s._id} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <li key={s.id} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <span>{dayjs(s.startTime).format('HH:mm')}{s.endTime ? ` – ${dayjs(s.endTime).format('HH:mm')}` : ''}</span>
               <span style={{ color: '#9ca3af' }}>{s.note || ''}</span>
               <span style={{ marginLeft: 'auto' }}>{hoursOf(s).toFixed(3)}h · ₹{amountOf(s).toFixed(2)}</span>
@@ -96,7 +102,7 @@ export default function CalendarPage() {
               </div>
               <ul className="list">
                 {data.items.map(s => (
-                  <li key={s._id}>
+                  <li key={s.id}>
                     <span>{dayjs(s.startTime).format('HH:mm')}{s.endTime ? ` – ${dayjs(s.endTime).format('HH:mm')}` : ''} {s.note || ''}</span>
                     <span>{hoursOf(s).toFixed(3)}h · ₹{amountOf(s).toFixed(2)}</span>
                   </li>

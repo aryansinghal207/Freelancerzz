@@ -64,7 +64,7 @@ export default function ClientTimeReportPage() {
               >
                 <option value="">All Projects</option>
                 {projects.map(proj => (
-                  <option key={proj._id} value={proj._id}>{proj.name}</option>
+                  <option key={proj.id} value={proj.id}>{proj.name}</option>
                 ))}
               </select>
             </label>
@@ -146,7 +146,7 @@ export default function ClientTimeReportPage() {
                 </thead>
                 <tbody>
                   {report.sessions.map(session => (
-                    <tr key={session._id} style={{ borderBottom: '1px solid #eee' }}>
+                    <tr key={session.id} style={{ borderBottom: '1px solid #eee' }}>
                       <td style={{ padding: 8 }}>
                         {new Date(session.startTime).toLocaleDateString()}
                       </td>
