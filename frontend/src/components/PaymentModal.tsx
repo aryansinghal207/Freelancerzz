@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import Modal from './ui/Modal'
 import Button from './ui/Button'
-import Badge from './ui/Badge'
 import paymentQr from '../assets/payment-qr.jpeg'
 
 interface PaymentModalProps {
@@ -133,4 +132,3 @@ export default function PaymentModal({
     </Modal>
   )
 }
-
