@@ -9,9 +9,9 @@ const TopBar = ({ title, isSidebarCollapsed, setIsSidebarCollapsed }) => {
   const navigate = useNavigate()
 
   const handleLogout = () => {
-  auth.logout()
-  navigate('/')
-}
+    auth.logout()
+    window.location.href = '/login'
+  }
 
   const pageTitle =
     title ||
