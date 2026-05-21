@@ -31,7 +31,7 @@ const Sidebar = () => {
       return [
         { href: '/clients', label: 'Clients', icon: Users },
         { href: '/projects', label: 'Projects', icon: FileText },
-        { href: '/tasks', label: 'Tasks', icon: Dashboard },
+        { href: '/tasks', label: 'Tasks', icon: LayoutDashboard },
         { href: '/timer', label: 'Timer', icon: Timer },
         { href: '/invoices', label: 'Invoices', icon: FilePlus },
         { href: '/reports', label: 'Reports', icon: BarChart3 },
@@ -40,7 +40,7 @@ const Sidebar = () => {
     }
     if (isClient) {
       return [
-        { href: '/client/dashboard', label: 'Dashboard', icon: Dashboard },
+        { href: '/client/dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/client/projects', label: 'Projects', icon: FileText },
         { href: '/client/invoices', label: 'Invoices', icon: FilePlus },
         { href: '/client/messages', label: 'Messages', icon: MessageCircle },
@@ -54,9 +54,9 @@ const Sidebar = () => {
     <aside className="w-64 bg-dark-card border-r dark:border-dark-border">
       <div className="flex h-16 items-center px-4 border-b dark:border-dark-border">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-primary-600/20 rounded-lg flex items-center justify-center">
-            <Dashboard className="w-5 h-5 text-primary-400" />
-          </div>
+            <div className="w-10 h-10 bg-primary-600/20 rounded-lg flex items-center justify-center">
+                <LayoutDashboard className="w-5 h-5 text-primary-400" />
+            </div>
           <span className="font-semibold text-dark-text">Freelancerzz</span>
         </div>
       </div>
