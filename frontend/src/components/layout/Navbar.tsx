@@ -37,7 +37,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handleLogout = () => {
     auth.logout()
-    navigate('/login')
+    window.location.href = '/'
   }
 
   const getInitials = () => {
