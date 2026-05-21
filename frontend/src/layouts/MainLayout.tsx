@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import TopBar from '../components/TopBar'
 
-const MainLayout = ({ _children }) => {
+const MainLayout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
   return (
