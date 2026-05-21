@@ -1,17 +1,22 @@
 import { Menu, X } from 'lucide-react'
 import { useAuth } from '../AuthContext'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import Button from '../components/ui/Button'
 
 const TopBar = ({ title, isSidebarCollapsed, setIsSidebarCollapsed }) => {
   const auth = useAuth()
   const location = useLocation()
-  const navigate = useNavigate()
-
+  
   const handleLogout = () => {
+<<<<<<< HEAD
+  auth.logout()
+      window.location.href = '/'
+}
+=======
     auth.logout()
     window.location.href = '/login'
   }
+>>>>>>> 367c7291e1f3240bb02d3293a4788f0c25f1586f
 
   const pageTitle =
     title ||
