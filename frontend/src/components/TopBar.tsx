@@ -8,9 +8,15 @@ const TopBar = ({ title, isSidebarCollapsed, setIsSidebarCollapsed }) => {
   const location = useLocation()
   
   const handleLogout = () => {
+<<<<<<< HEAD
   auth.logout()
       window.location.href = '/'
 }
+=======
+    auth.logout()
+    window.location.href = '/login'
+  }
+>>>>>>> 367c7291e1f3240bb02d3293a4788f0c25f1586f
 
   const pageTitle =
     title ||
