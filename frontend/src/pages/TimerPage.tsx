@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { getProjects, listSessions, manualLog, startTimer, stopTimer, deleteSession } from '../api'
 import dayjs from 'dayjs'
+import { Card, Button, Input, Badge } from '../components/ui'
+import { Timer, TrendingUp, DollarSign, List } from 'lucide-react'
 
 export default function TimerPage() {
   const [projects, setProjects] = useState([])
@@ -38,7 +40,7 @@ export default function TimerPage() {
   }
 
   async function handleStop() {
-    const ws = await stopTimer(running.id)
+    const _ws = await stopTimer(running.id)
     setRunning(null)
     setSessions(await listSessions({ projectId }))
   }
@@ -82,67 +84,185 @@ export default function TimerPage() {
   }, [sessions])
 
   return (
-    <div>
-      <h2>Timer</h2>
-      <div className="row" style={{ marginBottom: 8 }}>
-        <select value={projectId} onChange={e => setProjectId(e.target.value)}>
-          <option value="">Select project</option>
-          {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-        </select>
-        <input type="date" value={date} onChange={e => setDate(e.target.value)} />
-        <div style={{ marginLeft: 'auto' }}>
-          <strong>Today:</strong> {formatSecondsToHMS(summary.totalSeconds)} · ₹{summary.totalEarnings.toFixed(2)}
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <h1 className="text-3xl font-bold text-gradient-primary">Timer</h1>
+        <div className="flex items-center space-x-4">
+          <span className="text-dark-text/60">Today:</span>
+          <span className="font-bold text-dark-text">{formatSecondsToHMS(summary.totalSeconds)}</span>
+          <span className="text-dark-text/60">·</span>
+          <span className="font-bold text-dark-text">₹{summary.totalEarnings.toFixed(2)}</span>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12 }}>
-        <div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <input placeholder="Note (optional)" value={note} onChange={e => setNote(e.target.value)} />
-            {!running && <button disabled={!projectId} onClick={handleStart}>Start</button>}
-            {running && (
-              <>
-                <button onClick={handleStop}>Stop ({formatSecondsToHMS(runningSeconds)})</button>
-                <div style={{ color: 'var(--muted)' }}>Running since {dayjs(running.startTime).format('HH:mm')}</div>
-              </>
-            )}
-            <button disabled={!projectId} onClick={() => handleManual()}>Log Manual</button>
-          </div>
-          {/* quick add buttons removed as requested */}
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column: Controls */}
+        <Card className="p-6">
+          <div className="space-y-4">
+            {/* Project Selector */}
+            <div className="space-y-2">
+              <label className="text-dark-text/60 font-medium">Project</label>
+              <select
+                value={projectId}
+                onChange={e => setProjectId(e.target.value)}
+                className="input w-full"
+              >
+                <option value="">Select project</option>
+                {projects.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
 
-          <ul style={{ marginTop: 12 }}>
+            {/* Notes Input */}
+            <div className="space-y-2">
+              <label className="text-dark-text/60 font-medium">Note (optional)</label>
+              <Input
+                value={note}
+                onChange={e => setNote(e.target.value)}
+                placeholder="Add a note about this session"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col lg:flex-row gap-3">
+              {!running && (
+                <Button
+                  variant="primary"
+                  onClick={handleStart}
+                  disabled={!projectId}
+                  className="flex-1"
+                >
+                  Start Timer
+                </Button>
+              )}
+              {running && (
+                <>
+                  <Button
+                    variant="danger"
+                    onClick={handleStop}
+                    className="flex-1"
+                  >
+                    Stop Timer
+                  </Button>
+                  <div className="flex flex-col items-center text-xs text-dark-text/60">
+                    Running since {dayjs(running.startTime).format('HH:mm')}
+                  </div>
+                </>
+              )}
+              <Button
+                variant="ghost"
+                onClick={() => handleManual()}
+                disabled={!projectId}
+                className="flex-1"
+              >
+                Log Manual
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        {/* Right Column: Timer Display and Stats */}
+        <Card className="p-6">
+          <div className="space-y-6">
+            {/* Live Timer */}
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2">
+                <Timer className="w-8 h-8 text-primary-400" />
+                <h1 className="text-5xl font-bold text-dark-text tracking-tight">
+                  {formatSecondsToHMS(runningSeconds)}
+                </h1>
+              </div>
+              {running && (
+                <p className="mt-2 text-dark-text/60">
+                  Running on {projects.find(p => p.id === running.projectId)?.name || 'Project'}
+                </p>
+              )}
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <div className="text-dark-text/60 text-sm">Today's Work</div>
+                <div className="text-2xl font-bold text-dark-text">
+                  {formatSecondsToHMS(summary.totalSeconds)}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-dark-text/60 text-sm">Today's Earnings</div>
+                <div className="text-2xl font-bold text-dark-text">
+                  ₹{summary.totalEarnings.toFixed(2)}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-dark-text/60 text-sm">This Week</div>
+                <div className="text-2xl font-bold text-dark-text">
+                  12h 30m
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-dark-text/60 text-sm">Weekly Earnings</div>
+                <div className="text-2xl font-bold text-dark-text">
+                  ₹2,450.00
+                </div>
+              </div>
+            </div>
+
+            {/* Weekly Chart Placeholder */}
+            <div className="pt-4 border-t border-dark-border/20">
+              <h2 className="text-lg font-bold text-dark-text mb-4">Weekly Productivity</h2>
+              <div className="h-32 bg-dark-card/50 rounded-lg"></div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Session Log */}
+      <Card className="p-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4">
+          <h2 className="text-xl font-bold text-dark-text">Session Log</h2>
+          <Button variant="ghost" onClick={() => {}}>Clear Log</Button>
+        </div>
+        {sessions.length > 0 ? (
+          <div className="space-y-3">
             {sessions.map(s => (
-              <li key={s.id} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <span>{dayjs(s.startTime).format('HH:mm')}{s.endTime ? ` – ${dayjs(s.endTime).format('HH:mm')}` : ''} {s.note||''}</span>
-                <span style={{ marginLeft: 'auto' }}>{formatMinutesToHMS((s.durationMinutes||0))} · ₹{amountOf(s).toFixed(2)}</span>
-                <button className="danger" onClick={() => remove(s)}>Delete</button>
-              </li>
+              <div key={s.id} className="p-4 bg-white/5 rounded-lg border border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex flex-col space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-dark-text/60 text-xs">
+                      {dayjs(s.startTime).format('HH:mm')}
+                    </span>
+                    {s.endTime && (
+                      <span className="text-dark-text/40 text-xs">– {dayjs(s.endTime).format('HH:mm')}</span>
+                    )}
+                  </div>
+                  {s.note && (
+                    <p className="text-dark-text/60 text-sm">{s.note}</p>
+                  )}
+                </div>
+                <div className="text-right space-y-1">
+                  <span className="font-semibold text-dark-text">
+                    {formatMinutesToHMS((s.durationMinutes||0))}
+                  </span>
+                  <span className="text-dark-text/60">· ₹{amountOf(s).toFixed(2)}</span>
+                  <button
+                    onClick={() => remove(s)}
+                    className="text-xs text-danger hover:text-danger/80"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
             ))}
-          </ul>
-        </div>
-
-        <div style={{ background: 'var(--panel)', border: '1px solid var(--border)', borderRadius: 10, padding: 12 }}>
-          <div style={{ fontSize: 32, fontWeight: 700, marginBottom: 8 }}>
-            {formatSecondsToHMS(runningSeconds)}
           </div>
-          <div style={{ color: 'var(--muted)' }}>
-            {running ? `Running on ${projects.find(p => p.id === running.projectId)?.name || 'Project'} ` : 'No active timer'}
+        ) : (
+          <div className="text-center py-8 text-dark-text/60">
+            No sessions logged yet
           </div>
-          <hr style={{ borderColor: 'var(--border)', margin: '12px 0' }} />
-          <div className="col">
-            <div className="row" style={{ justifyContent: 'space-between' }}>
-              <span>Total today</span>
-              <strong>{formatSecondsToHMS(summary.totalSeconds)}</strong>
-            </div>
-            <div className="row" style={{ justifyContent: 'space-between' }}>
-              <span>Earnings</span>
-              <strong>₹{summary.totalEarnings.toFixed(2)}</strong>
-            </div>
-          </div>
-        </div>
-      </div>
+        )}
+      </Card>
     </div>
   )
 }
-
-

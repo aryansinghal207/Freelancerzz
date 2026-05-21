@@ -3,7 +3,7 @@ import { sendMessage, getMessages, markMessagesAsRead } from '../api';
 import { useSocket } from '../SocketContext';
 import { useAuth } from '../AuthContext';
 
-export default function MessageModal({ clientId, clientName, freelancerId, onClose }) {
+export default function MessageModal({ clientId, clientName, _freelancerId, onClose }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);

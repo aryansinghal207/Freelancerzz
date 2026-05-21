@@ -3,33 +3,46 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import tsParser from '@typescript-eslint/parser'
 
-export default defineConfig([
-  globalIgnores(['dist']),
+export default [
+  {
+    ignores: ['dist', 'node_modules'],
+  },
+  js.configs.recommended,
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      reactHooks.configs['recommended-latest'],
-      reactRefresh.configs.vite,
-    ],
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
-      parser: '@typescript-eslint/parser',
+      ecmaVersion: 'latest',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+      parser: tsParser,
       parserOptions: {
-        ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
         sourceType: 'module',
       },
     },
     plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
       '@typescript-eslint': tsPlugin,
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
-      '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      ...reactHooks.configs['recommended-latest'].rules,
+      ...reactRefresh.configs.vite.rules,
+      'no-unused-vars': 'off',
+      'no-undef': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^_' }],
     },
   },
-])
+  {
+    files: ['**/*.config.js', '**/*.config.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+]
