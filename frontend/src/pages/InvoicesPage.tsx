@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createInvoiceFromRange, getProjects, listInvoices, deleteInvoice } from '../api'
+import { Button, Input } from '../components/ui'
 
 export default function InvoicesPage() {
   const [projects, setProjects] = useState([])
@@ -41,26 +42,40 @@ export default function InvoicesPage() {
 
   return (
     <div>
-      <h2>Invoices</h2>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <select value={projectId} onChange={e => setProjectId(e.target.value)}>
+      <h2 className="mb-4 text-2xl font-bold text-gradient-primary">Invoices</h2>
+      <div className="space-y-4">
+        <select className="input w-full" value={projectId} onChange={e => setProjectId(e.target.value)}>
           <option value="">Select project</option>
           {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
-        <input type="date" value={from} onChange={e => setFrom(e.target.value)} />
-        <input type="date" value={to} onChange={e => setTo(e.target.value)} />
-        <button disabled={!projectId} onClick={createInv}>Create from Range</button>
+        <Input type="date" value={from} onChange={e => setFrom(e.target.value)} />
+        <Input type="date" value={to} onChange={e => setTo(e.target.value)} />
+        <Button onClick={createInv} disabled={!projectId}>
+          Create from Range
+        </Button>
       </div>
-      <ul style={{ marginTop: 12 }}>
+      <ul className="mt-4 space-y-4">
         {invoices.map(inv => (
-          <li key={inv.id}>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span>{inv.number} - ₹{inv.total} {inv.currency}</span>
-              <button onClick={() => openPdf(inv)}>Open PDF</button>
-              <button className="danger" onClick={async () => { await deleteInvoice(inv.id); setInvoices(await listInvoices()) }}>Delete</button>
-            </div>
-            <div style={{ color: 'var(--muted)' }}>
-              Total Time: {formatHoursToHMS((inv.items || []).reduce((sum,i)=>sum + (i.hours||0),0))}
+          <li key={inv.id} className="p-4 bg-white/5 rounded-lg border border-white/10">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div>
+                <span className="font-medium text-dark-text">{inv.number} - ₹{inv.total} {inv.currency}</span>
+                <div className="text-sm text-dark-text/60">
+                  Total Time: {formatHoursToHMS((inv.items || []).reduce((sum,i)=>sum + (i.hours||0),0))}
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button onClick={() => openPdf(inv)} variant="ghost" size="sm">
+                  Open PDF
+                </Button>
+                <Button
+                  onClick={async () => { await deleteInvoice(inv.id); setInvoices(await listInvoices()) }}
+                  variant="danger"
+                  size="sm"
+                >
+                  Delete
+                </Button>
+              </div>
             </div>
           </li>
         ))}

@@ -1,28 +1,34 @@
-import React from 'react'
-import { motion } from 'framer-motion'
+import { forwardRef } from 'react'
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CardProps {
+  className?: string
+  children?: React.ReactNode
+  asChild?: boolean
   hover?: boolean
-  glassmorphic?: boolean
-  noBorder?: boolean
 }
 
-const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ hover = false, glassmorphic = true, _noBorder = false, className = '', children, ...props }, ref) => {
-    const baseClass = glassmorphic ? 'card' : 'bg-dark-card border border-dark-border rounded-xl p-6'
-    const hoverClass = hover ? 'card-hover' : ''
+const Card = forwardRef<HTMLDivElement, CardProps>(
+  ({
+    className = '',
+    children,
+    asChild = false,
+    hover = false,
+    ...props
+  }, ref) => {
+    const Component = asChild ? 'div' : 'div'
 
     return (
-      <motion.div
-        ref={ref}
-        className={`${baseClass} ${hoverClass} ${className}`}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+      <Component
+        ref={ref as React.Ref<any>}
+        className={`
+          glass rounded-xl p-6 transition-all duration-300
+          ${hover ? 'hover:shadow-glow-lg hover:border-primary-500/50 hover:scale-105' : ''}
+          ${className}
+        `}
         {...props}
       >
         {children}
-      </motion.div>
+      </Component>
     )
   }
 )

@@ -174,35 +174,35 @@ export default function ClientDashboardPage() {
               </div>
             </div>
 
-            <div className="space-y-3">
-              {dashboard?.recentProjects && dashboard.recentProjects.length > 0 ? (
-                dashboard.recentProjects.map((project, idx) => (
-                  <motion.div
-                    key={project.id}
-                    className="p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-all border border-white/10"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + idx * 0.1 }}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-dark-text">{project.name}</h4>
-                      <Badge variant={project.status === 'completed' ? 'success' : 'info'}>
-                        {project.status}
-                      </Badge>
-                    </div>
-                    {project.description && (
-                      <p className="text-dark-muted text-sm line-clamp-2">
-                        {project.description}
-                      </p>
-                    )}
-                  </motion.div>
-                ))
-              ) : (
-                <div className="empty-state">
-                  <p className="text-dark-muted">No projects yet</p>
-                </div>
-              )}
-            </div>
+       <div className="space-y-3">
+         {dashboard?.recentProjects && dashboard.recentProjects.length > 0 ? (
+           dashboard.recentProjects.map((project, idx) => (
+             <motion.div
+               key={project.id}
+               className="p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-all border border-white/10"
+               initial={{ opacity: 0, x: -10 }}
+               animate={{ opacity: 1, x: 0 }}
+               transition={{ delay: 0.3 + idx * 0.1 }}
+             >
+               <div className="flex items-start justify-between mb-2">
+                 <h4 className="font-semibold text-dark-text">{project.name}</h4>
+                 <Badge variant={project.status === 'completed' ? 'success' : 'info'}>
+                   {project.status}
+                 </Badge>
+               </div>
+               {project.description && (
+                 <p className="text-dark-text/60 text-sm line-clamp-2">
+                   {project.description}
+                 </p>
+               )}
+             </motion.div>
+           ))
+         ) : (
+           <div className="empty-state">
+             <p className="text-dark-text/60">No projects yet</p>
+           </div>
+         )}
+       </div>
           </Card>
         </motion.div>
 
@@ -223,52 +223,52 @@ export default function ClientDashboardPage() {
               </div>
             </div>
 
-            <div className="space-y-3">
-              {dashboard?.recentInvoices && dashboard.recentInvoices.length > 0 ? (
-                dashboard.recentInvoices.map((invoice, idx) => (
-                  <motion.div
-                    key={invoice.id}
-                    className="p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-all border border-white/10"
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + idx * 0.1 }}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className="font-semibold text-dark-text">
-                          Invoice #{invoice.number}
-                        </h4>
-                        <p className="text-dark-muted text-sm">
-                          {new Date(invoice.issueDate).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-dark-text">₹{invoice.total}</p>
-                        <Badge
-                          variant={
-                            invoice.status === 'paid'
-                              ? 'success'
-                              : invoice.status === 'pending'
-                                ? 'warning'
-                                : 'danger'
-                          }
-                        >
-                          {invoice.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))
-              ) : (
-                <div className="empty-state">
-                  <p className="text-dark-muted">No invoices yet</p>
-                </div>
-              )}
-            </div>
+             <div className="space-y-3">
+               {dashboard?.recentInvoices && dashboard.recentInvoices.length > 0 ? (
+                 dashboard.recentInvoices.map((invoice, idx) => (
+                   <motion.div
+                     key={invoice.id}
+                     className="p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-all border border-white/10"
+                     initial={{ opacity: 0, x: 10 }}
+                     animate={{ opacity: 1, x: 0 }}
+                     transition={{ delay: 0.3 + idx * 0.1 }}
+                   >
+                     <div className="flex items-start justify-between mb-2">
+                       <div>
+                         <h4 className="font-semibold text-dark-text">
+                           Invoice #{invoice.number}
+                         </h4>
+                         <p className="text-dark-text/60 text-sm">
+                           {new Date(invoice.issueDate).toLocaleDateString('en-US', {
+                             month: 'short',
+                             day: 'numeric',
+                             year: 'numeric',
+                           })}
+                         </p>
+                       </div>
+                       <div className="text-right">
+                         <p className="font-bold text-dark-text">₹{invoice.total}</p>
+                         <Badge
+                           variant={
+                             invoice.status === 'paid'
+                               ? 'success'
+                               : invoice.status === 'pending'
+                                 ? 'warning'
+                                 : 'danger'
+                           }
+                         >
+                           {invoice.status}
+                         </Badge>
+                       </div>
+                     </div>
+                   </motion.div>
+                 ))
+               ) : (
+                 <div className="empty-state">
+                   <p className="text-dark-text/60">No invoices yet</p>
+                 </div>
+               )}
+             </div>
           </Card>
         </motion.div>
       </div>
