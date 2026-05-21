@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, LogOut, User } from 'lucide-react'
 import { useAuth } from '../../AuthContext'
-import Button from './Button'
+import Button from '../ui/Button'
 
 interface NavbarProps {
   freelancerLinks?: Array<{ to: string; label: string }>
@@ -31,7 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  const isFreelancer = auth?.isFreelancer()
+  const _isFreelancer = auth?.isFreelancer()
   const isClient = auth?.isClient()
   const links = isClient ? clientLinks : freelancerLinks
 

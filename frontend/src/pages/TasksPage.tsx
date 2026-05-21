@@ -16,7 +16,7 @@ export default function TasksPage() {
   }
   useEffect(() => { load() }, [projectId])
 
-  async function submit(e) {
+  async function _submit(e) {
     e.preventDefault()
     const taskStatus = status === 'all' ? 'todo' : status
     await createTask({ projectId, title, status: taskStatus })

@@ -38,7 +38,7 @@ export default function TimerPage() {
   }
 
   async function handleStop() {
-    const ws = await stopTimer(running.id)
+    const _ws = await stopTimer(running.id)
     setRunning(null)
     setSessions(await listSessions({ projectId }))
   }

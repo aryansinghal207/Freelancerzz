@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createInvoiceFromRange, getProjects, listInvoices, deleteInvoice } from '../api'
 
 export default function InvoicesPage() {

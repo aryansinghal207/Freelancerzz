@@ -255,7 +255,7 @@ export default function ClientsPage() {
 
       {/* Clients Grid */}
       {loading ? (
-        <div className="grid grid-auto gap-6">
+        <div className="grid gap-6">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="skeleton h-64 rounded-xl" />
           ))}
@@ -411,88 +411,3 @@ export default function ClientsPage() {
     </PageTemplate>
   )
 }
-      alert('Failed to invite client: ' + (err.response?.data?.message || err.message))
-    }
-  }
-
-  return (
-    <div>
-      <h2>Clients</h2>
-      <form onSubmit={submit} style={{ display: 'grid', gap: 8, maxWidth: 500 }}>
-        <input placeholder="Client Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
-        <input placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-        <input placeholder="Phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
-        <input placeholder="Address" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} />
-        <input placeholder="Hourly Rate" type="number" value={form.defaultHourlyRate} onChange={e => setForm({ ...form, defaultHourlyRate: Number(e.target.value) })} />
-        <input placeholder="Project Name" value={form.projectName} onChange={e => setForm({ ...form, projectName: e.target.value })} required />
-        <textarea 
-          placeholder="Project Description" 
-          value={form.projectDescription} 
-          onChange={e => setForm({ ...form, projectDescription: e.target.value })}
-          rows={3}
-          required
-        />
-        <input 
-          placeholder="Project Deadline" 
-          type="date" 
-          value={form.projectDeadline} 
-          onChange={e => setForm({ ...form, projectDeadline: e.target.value })}
-          required
-        />
-        <button>Add Client</button>
-      </form>
-      <ul>
-        {clients.length === 0 && (
-          <li className="empty">No clients yet. Add your first client using the form above.</li>
-        )}
-        {clients.map(c => (
-          <li key={c.id}>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span>{c.name} {c.email ? `- ${c.email}` : ''}</span>
-              <button className="secondary" onClick={() => toggleView(c)}>{expandedId === c.id ? 'Hide' : 'View'}</button>
-              <button onClick={() => setMessageModal({ clientId: c.id, clientName: c.name, freelancerId: c.userId })}>💬 Message</button>
-              <button onClick={() => inviteClientUser(c)}>Invite to Portal</button>
-              <button onClick={() => edit(c)}>Edit</button>
-              <button className="danger" onClick={() => remove(c)}>Delete</button>
-            </div>
-            {expandedId === c.id && (
-              <div style={{ marginTop: 8, borderTop: '1px solid var(--border)', paddingTop: 8 }}>
-                <div className="grid" style={{ gridTemplateColumns: 'repeat(2, minmax(0,1fr))' }}>
-                  <div><strong>Email:</strong> {c.email || '-'}</div>
-                  <div><strong>Phone:</strong> {c.phone || '-'}</div>
-                  <div><strong>Address:</strong> {c.address || '-'}</div>
-                  <div><strong>Default Rate:</strong> ₹{Number(c.defaultHourlyRate || 0).toFixed(2)}</div>
-                </div>
-                <div style={{ marginTop: 8 }}>
-                  <strong>Projects</strong>
-                  <ul className="list">
-                    {(clientProjects[c.id] || []).map(p => (
-                      <li key={p.id}>
-                        <span>{p.name}</span>
-                        <span>{p.hourlyRate ? `₹${p.hourlyRate}` : '—'}</span>
-                      </li>
-                    ))}
-                    {(!clientProjects[c.id] || clientProjects[c.id].length === 0) && (
-                      <li><span style={{ color: 'var(--muted)' }}>No projects</span></li>
-                    )}
-                  </ul>
-                </div>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-      
-      {messageModal && (
-        <MessageModal
-          clientId={messageModal.clientId}
-          clientName={messageModal.clientName}
-          freelancerId={messageModal.freelancerId}
-          onClose={() => setMessageModal(null)}
-        />
-      )}
-    </div>
-  )
-}
-
-
